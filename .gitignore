@@ -1,0 +1,21 @@
+# Dependencies & build
+node_modules/
+
+# IDE & Editor files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Antigravity & Codegraph
+.codegraph/
+.gemini/
+
+# Operating System files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs & temp files
+*.log
+*.tmp

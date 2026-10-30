@@ -1,0 +1,2282 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="format-detection" content="telephone=no">
+    <title>برنامه اختصاصی ساختمان پارس</title>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet"
+        type="text/css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            safelist: [
+                'bg-rose-600', 'active:bg-rose-700', 'shadow-rose-200', 'bg-rose-50', 'text-rose-600', 'border-rose-100',
+                'bg-indigo-600', 'active:bg-indigo-700', 'shadow-indigo-200', 'bg-indigo-50', 'text-indigo-600', 'border-indigo-100',
+                'translate-x-3', 'sm:translate-x-5'
+            ],
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Vazirmatn', 'Tahoma', 'Segoe UI', 'system-ui', 'sans-serif'] },
+                    colors: { primary: '#4f46e5', secondary: '#10b981', danger: '#ef4444' },
+                    fontSize: {
+                        xs: ['0.875rem', { lineHeight: '1.25rem' }],
+                        sm: ['1rem', { lineHeight: '1.5rem' }],
+                        base: ['1.125rem', { lineHeight: '1.75rem' }],
+                        lg: ['1.25rem', { lineHeight: '1.75rem' }],
+                        xl: ['1.5rem', { lineHeight: '2rem' }],
+                        '2xl': ['1.875rem', { lineHeight: '2.25rem' }],
+                        '3xl': ['2.25rem', { lineHeight: '2.5rem' }],
+                        '4xl': ['3rem', { lineHeight: '1.1' }],
+                        '5xl': ['3.75rem', { lineHeight: '1.05' }]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-right: env(safe-area-inset-right, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+            --safe-left: env(safe-area-inset-left, 0px);
+            --header-h: 4rem;
+            --nav-h: 4.375rem;
+            --app-h: 100vh;
+        }
+
+        @supports (height: 100svh) {
+            :root {
+                --app-h: 100svh;
+            }
+        }
+
+        .pt-safe {
+            padding-top: var(--safe-top);
+        }
+
+        .pb-safe {
+            padding-bottom: var(--safe-bottom);
+        }
+
+        .pl-safe {
+            padding-left: var(--safe-left);
+        }
+
+        .pr-safe {
+            padding-right: var(--safe-right);
+        }
+
+        html {
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+            font-size: clamp(14px, 0.84rem + 0.44vw, 17px);
+            height: 100%;
+            height: -webkit-fill-available;
+            height: var(--app-h);
+            min-height: 100%;
+            min-height: -webkit-fill-available;
+            min-height: var(--app-h);
+            max-height: var(--app-h);
+            overflow: hidden;
+            overscroll-behavior: none;
+        }
+
+        body {
+            font-family: 'Vazirmatn', Tahoma, 'Segoe UI', system-ui, sans-serif;
+            background-color: #e2e8f0;
+            color: #1e293b;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            -webkit-tap-highlight-color: transparent;
+            overscroll-behavior: none;
+            height: 100%;
+            height: -webkit-fill-available;
+            height: var(--app-h);
+            min-height: 100%;
+            min-height: -webkit-fill-available;
+            min-height: var(--app-h);
+            max-height: var(--app-h);
+            overflow: hidden;
+            touch-action: manipulation;
+        }
+
+        /* مبلغ به حروف زیر فیلدهای پولی */
+        .money-words {
+            font-size: max(1rem, 16px);
+            font-weight: 700;
+            line-height: 1.45;
+            min-height: 1.35rem;
+        }
+
+        .app-container {
+            height: 100%;
+            width: 100%;
+            max-width: 500px;
+            max-height: var(--app-h);
+            background: white;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.1);
+            container-type: inline-size;
+            container-name: app;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+            box-sizing: border-box;
+        }
+
+        .app-nav {
+            flex-shrink: 0;
+            min-height: calc(var(--nav-h) + var(--safe-bottom));
+            padding-bottom: var(--safe-bottom);
+            padding-left: max(0.5rem, var(--safe-left));
+            padding-right: max(0.5rem, var(--safe-right));
+        }
+
+        .app-header {
+            flex-shrink: 0;
+            min-height: calc(var(--header-h) + var(--safe-top));
+            padding-top: var(--safe-top);
+            padding-left: max(0.75rem, var(--safe-left));
+            padding-right: max(0.75rem, var(--safe-right));
+        }
+
+        .app-overlay {
+            position: absolute;
+            inset: 0;
+            max-height: 100%;
+            overflow: hidden;
+        }
+
+        .app-container main,
+        .app-container header,
+        .app-container nav button {
+            min-width: 0;
+        }
+
+        .content-scroll {
+            flex: 1 1 auto;
+            min-height: 0;
+            overflow-y: auto;
+            padding-bottom: clamp(0.75rem, 3cqi, 1.25rem);
+            scrollbar-width: none;
+            overscroll-behavior-y: contain;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .content-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .money-input {
+            direction: ltr;
+            text-align: left;
+            font-family: 'Vazirmatn', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+            font-weight: 700 !important;
+            letter-spacing: 0.05em;
+            font-variant-numeric: tabular-nums;
+            -webkit-font-feature-settings: "ss01" 1, "cv01" 1;
+            font-feature-settings: "ss01" 1, "cv01" 1;
+        }
+
+        #period-setup-form input,
+        #period-setup-form .money-words,
+        #period-locked-summary,
+        .money-words {
+            font-family: 'Vazirmatn', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 0.04em;
+        }
+
+        .expense-unit-hint {
+            font-size: 0.58em;
+            font-weight: 400;
+            color: #059669;
+        }
+
+        /* ——— ریسپانسو: یک پله کوچک‌تر از دسکتاپ، نه خیلی ریز ——— */
+        @container app (max-width: 500px) {
+
+            #tab-units,
+            #tab-periods,
+            #tab-reports {
+                padding: 0.8rem !important;
+            }
+
+            .content-scroll {
+                padding-bottom: 0.85rem !important;
+            }
+
+            nav.app-nav {
+                min-height: calc(4.35rem + var(--safe-bottom)) !important;
+            }
+
+            nav.no-print svg {
+                width: 1.4rem !important;
+                height: 1.4rem !important;
+            }
+
+            .app-header {
+                min-height: calc(3.6rem + var(--safe-top)) !important;
+                padding-top: max(var(--safe-top), 0.45rem) !important;
+                padding-bottom: 0.45rem !important;
+            }
+
+            #header-title {
+                font-size: 1.08rem !important;
+                line-height: 1.2 !important;
+            }
+
+            nav span.font-bold {
+                font-size: 0.76rem !important;
+            }
+
+            .app-container .text-5xl {
+                font-size: 2.15rem !important;
+                line-height: 1.1 !important;
+            }
+
+            .app-container .text-4xl {
+                font-size: 1.82rem !important;
+                line-height: 1.15 !important;
+            }
+
+            .app-container .text-3xl {
+                font-size: 1.56rem !important;
+                line-height: 1.2 !important;
+            }
+
+            .app-container .text-2xl {
+                font-size: 1.34rem !important;
+                line-height: 1.25 !important;
+            }
+
+            .app-container .text-xl {
+                font-size: 1.19rem !important;
+            }
+
+            .app-container .text-lg {
+                font-size: 1.08rem !important;
+            }
+
+            .app-container .text-base {
+                font-size: 1.02rem !important;
+            }
+
+            .app-container .text-sm {
+                font-size: 0.93rem !important;
+            }
+
+            .app-container .text-xs {
+                font-size: 0.84rem !important;
+            }
+
+            .app-container .text-\[10px\] {
+                font-size: 0.8rem !important;
+            }
+
+            .app-container .text-\[11px\] {
+                font-size: 0.88rem !important;
+            }
+
+            .app-container .text-\[9px\] {
+                font-size: 0.72rem !important;
+            }
+
+            #units-list .text-lg,
+            #units-list .text-xl {
+                font-size: 1.08rem !important;
+            }
+
+            #periods-list .text-xl {
+                font-size: 1.08rem !important;
+            }
+
+            #periods-list .text-base {
+                font-size: 1rem !important;
+            }
+
+            .table-container th,
+            .table-container td {
+                font-size: 0.88rem !important;
+            }
+
+            .app-container .p-8 {
+                padding: 1.15rem !important;
+            }
+
+            .app-container .p-6 {
+                padding: 0.95rem !important;
+            }
+
+            .app-container .p-5 {
+                padding: 0.8rem !important;
+            }
+
+            .app-container .p-4 {
+                padding: 0.65rem !important;
+            }
+
+            .app-container .py-5 {
+                padding-top: 0.8rem !important;
+                padding-bottom: 0.8rem !important;
+            }
+
+            .app-container .py-4 {
+                padding-top: 0.65rem !important;
+                padding-bottom: 0.65rem !important;
+            }
+
+            .app-container .py-3\.5 {
+                padding-top: 0.55rem !important;
+                padding-bottom: 0.55rem !important;
+            }
+
+            .app-container .gap-4 {
+                gap: 0.6rem !important;
+            }
+
+            .app-container .gap-3 {
+                gap: 0.45rem !important;
+            }
+
+            .app-container .mb-6 {
+                margin-bottom: 0.95rem !important;
+            }
+
+            .app-container .mb-8 {
+                margin-bottom: 1.1rem !important;
+            }
+
+            .app-container .rounded-\[40px\] {
+                border-radius: 1.35rem !important;
+            }
+
+            .app-container .rounded-3xl {
+                border-radius: 1.1rem !important;
+            }
+
+            .app-container .rounded-2xl {
+                border-radius: 0.8rem !important;
+            }
+
+            .app-container .rounded-xl {
+                border-radius: 0.65rem !important;
+            }
+
+            #modal-unit-content {
+                padding: 0.95rem !important;
+                max-height: 94% !important;
+            }
+
+            #btn-occ-minus,
+            #btn-occ-plus {
+                width: 3.15rem !important;
+                height: 3.15rem !important;
+                font-size: 1.8rem !important;
+            }
+
+            #txt-unit-occupants {
+                font-size: 1.6rem !important;
+            }
+
+            #report-unit-balance {
+                font-size: 1.92rem !important;
+                max-width: 55%;
+                text-align: left;
+            }
+
+            #report-unit-name {
+                font-size: 1.16rem !important;
+            }
+
+            #period-setup-form {
+                padding: 0.85rem !important;
+            }
+
+            #period-setup-form .money-input,
+            #period-setup-form select {
+                font-size: 1.05rem !important;
+                padding: 0.45rem 0.5rem !important;
+            }
+
+            #f-sp-total {
+                font-size: 1.38rem !important;
+                padding: 0.55rem !important;
+            }
+
+            #global-debtors .text-2xl {
+                font-size: 1.21rem !important;
+            }
+
+            #global-debtors .text-lg {
+                font-size: 1.05rem !important;
+            }
+
+            .grid.grid-cols-2 {
+                gap: 0.4rem !important;
+            }
+
+            .grid.grid-cols-2>button {
+                padding: 0.55rem 0.35rem !important;
+                font-size: 0.93rem !important;
+            }
+
+            .grid.grid-cols-2>button svg {
+                width: 0.95rem !important;
+                height: 0.95rem !important;
+            }
+        }
+
+        @container app (max-width: 420px) {
+            .app-container .text-5xl {
+                font-size: 1.95rem !important;
+            }
+
+            .app-container .text-4xl {
+                font-size: 1.65rem !important;
+            }
+
+            #total-fund {
+                font-size: 1.92rem !important;
+            }
+
+            #total-income,
+            #total-expense {
+                font-size: 1.16rem !important;
+            }
+
+            #unit-title {
+                font-size: 1.27rem !important;
+            }
+
+            #period-detail-title {
+                font-size: 0.95rem !important;
+            }
+
+            #modal-period-detail header .text-sm {
+                font-size: 0.8rem !important;
+            }
+
+            #period-status-badge {
+                font-size: 0.62rem !important;
+                padding: 0.12rem 0.35rem !important;
+            }
+
+            .table-container th,
+            .table-container td {
+                padding: 0.3rem 0.14rem !important;
+                line-height: 1.22;
+                font-size: 0.82rem !important;
+            }
+
+            .unit-sticky-col {
+                max-width: 7.5rem;
+            }
+
+            .unit-cell-name {
+                max-width: 4.5rem;
+            }
+
+            .table-container .text-xl {
+                font-size: 0.97rem !important;
+            }
+
+            .table-container .text-lg {
+                font-size: 0.86rem !important;
+            }
+
+            .table-container label span {
+                font-size: 0.82rem !important;
+            }
+
+            .table-container input[type="checkbox"] {
+                width: 0.9rem !important;
+                height: 0.9rem !important;
+            }
+
+            .table-container .w-12 {
+                width: 2rem !important;
+            }
+
+            .table-container .w-16 {
+                width: 2.35rem !important;
+            }
+
+            #units-list .text-lg,
+            #units-list .text-xl {
+                font-size: 0.99rem !important;
+            }
+
+            #units-list .w-12 {
+                width: 2.5rem !important;
+                height: 2.5rem !important;
+                font-size: 1.27rem !important;
+            }
+
+            #periods-list .text-xl {
+                font-size: 0.99rem !important;
+            }
+
+            #periods-list .text-base {
+                font-size: 0.9rem !important;
+            }
+
+            #report-unit-body>div {
+                padding: 0.85rem !important;
+            }
+
+            #report-unit-body .text-lg {
+                font-size: 1.04rem !important;
+            }
+
+            #report-unit-body .text-xl {
+                font-size: 1.1rem !important;
+            }
+        }
+
+        @container app (max-width: 360px) {
+            #header-title {
+                font-size: 0.99rem !important;
+            }
+
+            nav span.font-bold {
+                font-size: 0.72rem !important;
+                line-height: 1.12;
+            }
+
+            nav.app-nav {
+                min-height: calc(3.9rem + var(--safe-bottom)) !important;
+            }
+
+            .app-container .text-5xl {
+                font-size: 1.74rem !important;
+            }
+
+            .app-container .text-4xl {
+                font-size: 1.48rem !important;
+            }
+
+            .app-container .text-3xl {
+                font-size: 1.34rem !important;
+            }
+
+            .app-container .text-2xl {
+                font-size: 1.21rem !important;
+            }
+
+            .app-container .text-xl {
+                font-size: 1.1rem !important;
+            }
+
+            #btn-occ-minus,
+            #btn-occ-plus {
+                width: 2.75rem !important;
+                height: 2.75rem !important;
+                font-size: 1.58rem !important;
+            }
+
+            #txt-unit-occupants {
+                font-size: 1.37rem !important;
+            }
+
+            #report-unit-balance {
+                font-size: 1.48rem !important;
+            }
+
+            .table-container th,
+            .table-container td {
+                padding: 0.24rem 0.1rem !important;
+                font-size: 0.76rem !important;
+            }
+
+            .unit-sticky-col {
+                max-width: 6.5rem;
+            }
+
+            .unit-cell-name {
+                max-width: 3.75rem;
+            }
+
+            #period-actions .text-lg {
+                font-size: 1.02rem !important;
+            }
+
+            .app-container .text-\[10px\] {
+                font-size: 0.76rem !important;
+            }
+
+            .app-container .text-\[11px\] {
+                font-size: 0.84rem !important;
+            }
+        }
+
+        @container app (max-width: 320px) {
+            #header-title {
+                font-size: 0.93rem !important;
+            }
+
+            nav span.font-bold {
+                font-size: 0.68rem !important;
+            }
+
+            .app-container .text-5xl {
+                font-size: 1.56rem !important;
+            }
+
+            #total-fund {
+                font-size: 1.58rem !important;
+            }
+
+            .grid.grid-cols-2>button {
+                font-size: 0.84rem !important;
+                line-height: 1.22;
+            }
+
+            .unit-sticky-col {
+                max-width: 5.5rem;
+            }
+
+            .unit-cell-name {
+                max-width: 3rem;
+            }
+        }
+
+        .period-option-box {
+            background-color: #eef2ff;
+            border-color: #c7d2fe;
+        }
+
+        .period-option-label {
+            color: #312e81;
+        }
+
+        .period-option-check {
+            accent-color: #4f46e5;
+        }
+
+        .phone-input::placeholder {
+            color: #94a3b8;
+            font-weight: 500;
+            opacity: 1;
+        }
+
+        /* Sticky Table Configuration - Seamless */
+        .table-container {
+            flex: 1;
+            overflow-y: auto;
+            position: relative;
+            scrollbar-width: none;
+            background: white;
+            overscroll-behavior-y: contain;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .table-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        #modal-unit-content,
+        #report-unit-body,
+        #report-view-content,
+        #period-setup-form,
+        .modal-scroll {
+            overscroll-behavior-y: contain;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .sticky-head th {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            background-color: #f1f5f9;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .sticky-col {
+            position: sticky;
+            right: 0;
+            z-index: 10;
+            background-color: inherit;
+            border-left: 2px solid #cbd5e1;
+            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.02);
+        }
+
+        .sticky-head .sticky-col {
+            z-index: 30;
+        }
+
+        .unit-sticky-col {
+            min-width: 3.5rem;
+            width: auto;
+            max-width: 9rem;
+        }
+
+        .unit-cell-label {
+            display: inline-flex;
+            flex-wrap: nowrap;
+            align-items: baseline;
+            justify-content: center;
+            gap: 0.2rem;
+            white-space: nowrap;
+            line-height: 1.2;
+            max-width: 100%;
+        }
+
+        .unit-cell-id {
+            font-weight: 900;
+            flex-shrink: 0;
+        }
+
+        .unit-cell-name {
+            font-size: 0.72em;
+            font-weight: 700;
+            color: #334155;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            min-width: 0;
+        }
+
+        .unit-list-title {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+        }
+
+        .zebra-row:nth-child(even) {
+            background-color: #f8fafc;
+        }
+
+        .zebra-row:nth-child(odd) {
+            background-color: #ffffff;
+        }
+
+        .monthly-col {
+            display: none !important;
+        }
+
+        /* Toast Animation */
+        #toast {
+            transition: opacity 0.3s, transform 0.3s;
+            transform: translate(-50%, 20px);
+            opacity: 0;
+            z-index: 9999;
+            top: calc(4.5rem + var(--safe-top)) !important;
+        }
+
+        #toast.show {
+            transform: translate(-50%, 0);
+            opacity: 1;
+        }
+
+        /* سربرگ اطلاعیه فقط در خروجی چاپ — هرگز در UI برنامه */
+        .period-print-header-wrap {
+            display: none !important;
+            position: absolute !important;
+            left: -9999px !important;
+            width: 1px !important;
+            height: 1px !important;
+            overflow: hidden !important;
+            clip: rect(0, 0, 0, 0) !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            border: 0 !important;
+            visibility: hidden !important;
+            pointer-events: none !important;
+        }
+
+
+        .notice-print-sheet table.nps-cols-many th,
+        .notice-print-sheet table.nps-cols-many td {
+            font-size: 0.85rem;
+            padding: 4px 2px;
+        }
+
+        .notice-print-sheet table.nps-cols-med th,
+        .notice-print-sheet table.nps-cols-med td {
+            font-size: 0.92rem;
+            padding: 5px 3px;
+        }
+
+        .notice-print-sheet .nps-col-unit {
+            width: 15%;
+            word-break: break-word;
+        }
+
+        .credit-hint-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 1.3rem;
+            height: 1.3rem;
+            border-radius: 9999px;
+            font-size: 0.78rem;
+            font-weight: 900;
+            line-height: 1;
+            background: #dbeafe;
+            color: #1d4ed8;
+            border: 1px solid #93c5fd;
+            cursor: pointer;
+            padding: 0;
+            flex-shrink: 0;
+            vertical-align: middle;
+        }
+
+        .credit-hint-btn:active {
+            background: #bfdbfe;
+        }
+
+        .credit-hint-readonly {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 1.2rem;
+            height: 1.2rem;
+            border-radius: 9999px;
+            font-size: 0.72rem;
+            font-weight: 900;
+            color: #1d4ed8;
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+        }
+
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 10mm;
+            }
+
+            body {
+                background: white !important;
+                display: block !important;
+            }
+
+            .app-container {
+                max-width: 100% !important;
+                height: auto !important;
+                overflow: visible !important;
+                display: block !important;
+                position: static !important;
+                box-shadow: none !important;
+            }
+
+            .content-scroll {
+                overflow: visible !important;
+                padding: 0 !important;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            #modal-period-detail {
+                position: static !important;
+                display: block !important;
+                height: auto !important;
+            }
+
+            #main-content,
+            nav,
+            header {
+                display: none !important;
+            }
+
+            .table-container {
+                overflow: visible !important;
+                max-height: none !important;
+            }
+
+            body.print-notice #period-setup-form,
+            body.print-notice #period-locked-summary,
+            body.print-notice #period-preview-hint,
+            body.print-notice #period-actions,
+            body.print-notice #notice-print-view {
+                display: none !important;
+            }
+
+            body.print-notice #period-scroll-area {
+                display: block !important;
+            }
+
+            body.print-notice #period-table-wrapper {
+                display: block !important;
+            }
+
+            body.print-notice .period-print-header-wrap {
+                display: block !important;
+                position: static !important;
+                left: auto !important;
+                width: auto !important;
+                height: auto !important;
+                overflow: visible !important;
+                clip: auto !important;
+                visibility: visible !important;
+                pointer-events: auto !important;
+                text-align: center;
+                margin-bottom: 10px;
+            }
+
+            body.print-notice .table-container {
+                overflow: visible !important;
+                max-height: none !important;
+                height: auto !important;
+            }
+
+            body.print-notice .sticky-col,
+            body.print-notice .sticky-head th,
+            body.print-notice tfoot {
+                position: static !important;
+            }
+
+            body.print-notice input[type="checkbox"] {
+                display: none !important;
+            }
+
+            body.print-notice label {
+                cursor: default !important;
+            }
+
+            body.print-notice .pt-col-oc,
+            body.print-notice .print-col-off {
+                display: none !important;
+            }
+
+            .print-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 8px;
+            }
+
+            .print-table th,
+            .print-table td {
+                border: 1.5px solid #000 !important;
+                padding: 7px 8px !important;
+                text-align: center !important;
+                font-size: 12pt !important;
+                color: #000 !important;
+                font-weight: 700 !important;
+                vertical-align: middle !important;
+                white-space: nowrap !important;
+                line-height: 1.35 !important;
+                letter-spacing: 0.04em !important;
+                font-variant-numeric: tabular-nums !important;
+                -webkit-font-feature-settings: "ss01" 1, "cv01" 1 !important;
+                font-feature-settings: "ss01" 1, "cv01" 1 !important;
+            }
+
+            .print-table .unit-sticky-col {
+                min-width: 3.5rem !important;
+                max-width: none !important;
+            }
+
+            .print-table .unit-cell-label {
+                white-space: nowrap !important;
+            }
+
+            .print-table thead th {
+                background: #e2e8f0 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .print-table tfoot td {
+                background: #1e293b !important;
+                color: #fff !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .print-show,
+            .monthly-col {
+                display: table-cell !important;
+            }
+
+            .period-print-title {
+                font-size: 22pt;
+                font-weight: 900;
+                border-bottom: 3px solid #000;
+                padding-bottom: 8px;
+                margin: 0 0 10px;
+            }
+
+            .period-print-sub {
+                font-size: 14pt;
+                font-weight: 700;
+                margin: 0 0 8px;
+            }
+
+            .period-print-note {
+                font-size: 12pt;
+                font-weight: 700;
+                text-align: right;
+                border: 1px solid #000;
+                padding: 8px;
+                margin-top: 10px;
+                background: #f8fafc;
+            }
+
+            #modal-report-view {
+                position: static !important;
+                display: block !important;
+                height: auto !important;
+                min-height: 0 !important;
+                overflow: visible !important;
+                inset: auto !important;
+                z-index: auto !important;
+            }
+
+            #modal-report-view #report-view-content {
+                padding: 0 !important;
+                overflow: visible !important;
+                max-height: none !important;
+                flex: none !important;
+            }
+
+            .debtors-report-summary {
+                page-break-inside: avoid;
+                break-inside: avoid-page;
+            }
+
+            .debtors-report-summary .debtors-title {
+                font-size: 15pt !important;
+                margin: 0 0 6px !important;
+                padding-bottom: 4px !important;
+                border-bottom-width: 2px !important;
+                line-height: 1.25 !important;
+            }
+
+            .debtors-report-summary .debtors-meta {
+                font-size: 9pt !important;
+                margin: 0 0 8px !important;
+            }
+
+            .debtors-report-summary .debtors-table {
+                font-size: 10pt !important;
+                margin: 0 !important;
+            }
+
+            .debtors-report-summary .debtors-table th,
+            .debtors-report-summary .debtors-table td {
+                border: 1px solid #000 !important;
+                padding: 6px 10px !important;
+                line-height: 1.4 !important;
+                color: #000 !important;
+            }
+
+            .debtors-report-summary .debtors-table thead th {
+                background: #e2e8f0 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .debtors-report-summary .debtors-amt {
+                font-size: 10pt !important;
+                font-weight: 800 !important;
+                white-space: nowrap !important;
+            }
+
+            .debtors-report-summary .debtors-table tfoot td {
+                padding: 4px 6px !important;
+                font-size: 10pt !important;
+                background: #1e293b !important;
+                color: #fff !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .debtors-report-summary .debtors-total-amt {
+                font-size: 12pt !important;
+            }
+
+            .debtors-report-summary.density-sm .debtors-table {
+                font-size: 9pt !important;
+            }
+
+            .debtors-report-summary.density-sm .debtors-table th,
+            .debtors-report-summary.density-sm .debtors-table td {
+                padding: 2px 4px !important;
+            }
+
+            .debtors-report-summary.density-sm .debtors-title {
+                font-size: 13pt !important;
+                margin-bottom: 4px !important;
+            }
+
+            .debtors-report-summary.density-sm .debtors-meta {
+                margin-bottom: 5px !important;
+            }
+
+            .debtors-report-summary.density-md .debtors-table {
+                font-size: 8pt !important;
+            }
+
+            .debtors-report-summary.density-md .debtors-table th,
+            .debtors-report-summary.density-md .debtors-table td {
+                padding: 1px 3px !important;
+            }
+
+            .debtors-report-summary.density-md .debtors-title {
+                font-size: 12pt !important;
+            }
+
+            .debtors-report-summary.density-md .debtors-amt {
+                font-size: 8.5pt !important;
+            }
+
+            .debtors-report-summary.density-compact .debtors-table {
+                font-size: 7pt !important;
+            }
+
+            .debtors-report-summary.density-compact .debtors-table th,
+            .debtors-report-summary.density-compact .debtors-table td {
+                padding: 1px 2px !important;
+                line-height: 1.1 !important;
+            }
+
+            .debtors-report-summary.density-compact .debtors-title {
+                font-size: 11pt !important;
+                margin-bottom: 3px !important;
+            }
+
+            .debtors-report-summary.density-compact .debtors-meta {
+                font-size: 7.5pt !important;
+                margin-bottom: 4px !important;
+            }
+
+            .debtors-report-summary.density-compact .debtors-amt {
+                font-size: 7.5pt !important;
+            }
+
+            .debtors-report-summary.density-compact .debtors-total-amt {
+                font-size: 10pt !important;
+            }
+
+            .debtors-report-detailed h2 {
+                font-size: 15pt !important;
+                margin-bottom: 8px !important;
+            }
+
+            .debtors-report-detailed table {
+                font-size: 10pt !important;
+            }
+
+            .debtors-report-detailed th,
+            .debtors-report-detailed td {
+                border: 1px solid #000 !important;
+                padding: 4px 6px !important;
+                color: #000 !important;
+            }
+
+            .debtors-report-detailed .text-2xl {
+                font-size: 11pt !important;
+            }
+
+            .unit-report-print h2 {
+                font-size: 15pt !important;
+                margin-bottom: 8px !important;
+            }
+
+            .unit-report-print table {
+                font-size: 9pt !important;
+            }
+
+            .unit-report-print th,
+            .unit-report-print td {
+                border: 1px solid #000 !important;
+                padding: 3px 4px !important;
+                color: #000 !important;
+            }
+
+            .unit-report-print thead th {
+                background: #e2e8f0 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .unit-report-print tr.bg-orange-50 td {
+                background: #fff7ed !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            /* چاپ اطلاعیه: فقط همان پیش‌نمایش (موبایل + دسکتاپ) */
+            body.print-notice-sheet * {
+                visibility: hidden !important;
+            }
+
+            .notice-print-sheet .nps-table-outer {
+                width: 100%;
+                margin-top: 8px;
+                border: 2px solid #0f172a;
+                box-sizing: border-box;
+                display: flex;
+                flex-direction: column;
+                flex: 1;
+            }
+
+            .notice-print-sheet table.nps-table {
+                width: 100%;
+                height: 100%;
+                table-layout: fixed;
+                margin: 0;
+                border-collapse: separate;
+                border-spacing: 0;
+            }
+
+            .notice-print-sheet table.nps-table th,
+            .notice-print-sheet table.nps-table td {
+                border: 1px solid #475569;
+                padding: 5px 4px;
+                text-align: center;
+                font-size: 0.95rem;
+                font-weight: 700;
+                vertical-align: middle;
+            }
+
+            .notice-print-sheet table.nps-table th:first-child,
+            .notice-print-sheet table.nps-table td:first-child {
+                border-right: 2px solid #0f172a;
+            }
+
+            .notice-print-sheet table.nps-table th.nps-edge-left,
+            .notice-print-sheet table.nps-table td.nps-edge-left {
+                border-left: 2px solid #0f172a;
+            }
+
+            .notice-print-sheet table.nps-table thead th {
+                background: #cbd5e1 !important;
+                color: #0f172a;
+                font-weight: 900;
+                border-bottom: 2px solid #0f172a;
+            }
+
+            .notice-print-sheet table.nps-table tbody tr.nps-row-even td {
+                background-color: #f1f5f9 !important;
+            }
+
+            .notice-print-sheet table.nps-table tbody tr.nps-row-odd td {
+                background-color: #ffffff !important;
+            }
+
+            .notice-print-sheet table.nps-table tfoot td {
+                background-color: #0f172a !important;
+                color: #f8fafc !important;
+                border-top: 2px solid #0f172a;
+                font-weight: 900;
+            }
+
+            body.print-notice-sheet #notice-print-modal,
+            body.print-notice-sheet #notice-print-modal * {
+                visibility: visible !important;
+            }
+
+            body.print-notice-sheet #notice-print-modal {
+                display: block !important;
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                height: auto !important;
+                min-height: 0 !important;
+                overflow: visible !important;
+                z-index: 2147483647 !important;
+                background: #fff !important;
+                max-height: none !important;
+                border: none !important;
+                box-shadow: none !important;
+            }
+
+            body.print-notice-sheet #notice-print-modal .notice-print-toolbar,
+            body.print-notice-sheet #notice-print-modal>p {
+                display: none !important;
+                visibility: hidden !important;
+            }
+
+            body.print-notice-sheet #notice-print-modal .notice-print-scroll {
+                overflow: visible !important;
+                padding: 0 !important;
+                display: block !important;
+                height: auto !important;
+            }
+
+            body.print-notice-sheet .notice-print-sheet {
+                padding: 0 !important;
+            }
+
+            body.print-notice-sheet .notice-print-sheet .nps-title {
+                font-size: 18pt !important;
+            }
+
+            body.print-notice-sheet .notice-print-sheet .nps-sub {
+                font-size: 12pt !important;
+            }
+
+            body.print-notice-sheet .notice-print-sheet th,
+            body.print-notice-sheet .notice-print-sheet td {
+                font-size: 10pt !important;
+            }
+
+            body.print-report-view * {
+                visibility: hidden !important;
+            }
+
+            body.print-report-view #modal-report-view,
+            body.print-report-view #modal-report-view * {
+                visibility: visible !important;
+            }
+
+            body.print-report-view #modal-report-view {
+                display: block !important;
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                height: auto !important;
+                min-height: 0 !important;
+                overflow: visible !important;
+                z-index: 2147483647 !important;
+                background: #fff !important;
+                max-height: none !important;
+                border: none !important;
+                box-shadow: none !important;
+            }
+
+            body.print-report-view #modal-report-view header {
+                display: none !important;
+                visibility: hidden !important;
+            }
+
+            body.print-report-view #modal-report-view #report-view-content {
+                padding: 0 !important;
+                overflow: visible !important;
+                max-height: none !important;
+            }
+        }
+
+        /* پیش‌نمایش گزارش کلی بدهکاران — فشرده برای نزدیک بودن به چاپ A4 */
+        .debtors-report-summary .debtors-title {
+            font-size: 1.35rem;
+            font-weight: 900;
+            text-align: center;
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.35rem;
+            border-bottom: 3px solid #0f172a;
+        }
+
+        .debtors-report-summary .debtors-meta {
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .debtors-report-summary .debtors-table {
+            font-size: 0.9rem;
+        }
+
+        .debtors-report-summary .debtors-amt {
+            font-size: 1rem;
+            font-weight: 900;
+            color: #e11d48;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.2s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="app-container">
+        <header dir="ltr"
+            class="app-header bg-slate-900 text-white py-3 grid grid-cols-[auto_1fr_auto] items-center gap-2 z-40 no-print shadow-md w-full">
+            <div id="header-actions" class="flex gap-1.5 shrink-0 invisible">
+                <button onclick="undo()" id="btn-undo" type="button"
+                    class="px-2.5 py-1.5 bg-slate-800 rounded-lg opacity-40 pointer-events-none active:scale-95 transition-all text-base font-bold shadow-inner border border-slate-700">Undo</button>
+                <button onclick="redo()" id="btn-redo" type="button"
+                    class="hidden px-2.5 py-1.5 bg-slate-800 rounded-lg opacity-40 pointer-events-none active:scale-95 transition-all text-base font-bold shadow-inner border border-slate-700">Redo</button>
+            </div>
+            <h1 id="header-title" onclick="handleTitleClick()" dir="rtl"
+                class="min-w-0 text-base sm:text-lg font-black tracking-wide text-center leading-snug px-1 transition-transform duration-200 cursor-pointer select-none">
+                برنامه اختصاصی ساختمان پارس</h1>
+            <div id="header-spacer" class="shrink-0" aria-hidden="true"></div>
+        </header>
+
+        <main class="content-scroll bg-slate-50 flex flex-col min-h-0" id="main-content">
+            <div id="tab-units" class="p-4 space-y-4">
+                <div
+                    class="bg-blue-50 text-blue-800 p-4 rounded-xl text-lg mb-4 shadow-sm font-bold border border-blue-100 flex gap-3">
+                    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>برای ویرایش مشخصات یا ثبت عملیات مالی دستی، روی واحد کلیک کنید.
+                </div>
+                <div class="flex flex-col gap-3" id="units-list"></div>
+            </div>
+
+            <div id="tab-periods" class="p-4 hidden">
+                <button type="button" id="btn-new-period" onclick="openNewPeriodModal()"
+                    class="w-full bg-indigo-600 text-white font-bold py-5 rounded-2xl shadow-lg shadow-indigo-200 flex items-center justify-center gap-2 active:scale-95 transition-transform mb-6 text-xl">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                    ایجاد دوره جدید (شارژ / پیش‌بینی نشده)
+                </button>
+                <div id="periods-list" class="space-y-4"></div>
+            </div>
+
+            <div id="tab-reports" class="p-4 hidden">
+                <div class="bg-slate-900 rounded-3xl p-6 text-white mb-6 shadow-xl relative overflow-hidden">
+                    <div class="absolute -right-4 -top-4 w-24 h-24 bg-slate-800 rounded-full opacity-50"></div>
+                    <div class="text-slate-400 text-lg text-center mb-2 font-bold relative z-10">موجودی فعلی صندوق
+                        ساختمان</div>
+                    <div id="total-fund" class="text-5xl font-black text-center relative z-10 text-emerald-400"
+                        dir="ltr">0</div>
+                    <button type="button" onclick="openInitFundModal()"
+                        class="mt-5 w-full relative z-10 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 font-bold py-3.5 px-4 rounded-2xl text-lg active:scale-[0.98] transition-all">
+                        تنظیم موجودی اولیه صندوق
+                    </button>
+
+                    <div class="flex justify-between mt-6 pt-5 border-t border-slate-800 relative z-10">
+                        <div class="text-center">
+                            <div class="text-base text-slate-500 font-bold mb-1">کل دریافتی‌ها</div>
+                            <div id="total-income" class="text-emerald-300 font-black text-2xl" dir="ltr">0</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-base text-slate-500 font-bold mb-1">کل مخارج</div>
+                            <div id="total-expense" class="text-rose-400 font-black text-2xl" dir="ltr">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-4 mb-6 bg-white p-5 rounded-3xl shadow-sm border-2 border-slate-200">
+                    <h3 class="font-black text-slate-800 text-lg border-b-2 border-slate-100 pb-3">گزارش‌های چاپی (PDF)
+                    </h3>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="askDebtorsReportType()"
+                            class="bg-indigo-50 text-indigo-700 border-2 border-indigo-100 p-4 rounded-xl text-base font-bold flex items-center justify-center gap-1 active:bg-indigo-100 shadow-sm"><svg
+                                class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                </path>
+                            </svg>گزارش بدهکاران</button>
+                        <button onclick="printChartReport()"
+                            class="bg-indigo-50 text-indigo-700 border-2 border-indigo-100 p-4 rounded-xl text-base font-bold flex items-center justify-center gap-1 active:bg-indigo-100 shadow-sm"><svg
+                                class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                </path>
+                            </svg>نمودار صندوق</button>
+                        <button onclick="openDepositsReportModal()"
+                            class="col-span-2 bg-emerald-50 text-emerald-800 border-2 border-emerald-200 p-4 rounded-xl text-base font-bold flex items-center justify-center gap-2 active:bg-emerald-100 shadow-sm"><svg
+                                class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z">
+                                </path>
+                            </svg>گزارش خلاصه واریزی‌ها و سوابق بدهی</button>
+                    </div>
+                </div>
+
+                <div class="flex gap-3 mb-6">
+                    <button onclick="downloadBackup()"
+                        class="flex-1 bg-white border-2 border-slate-200 p-4 rounded-2xl text-lg font-bold flex items-center justify-center gap-2 active:bg-slate-50 shadow-sm"><svg
+                            class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                        </svg>خروجی بکاپ</button>
+                    <button onclick="document.getElementById('import-file').click()"
+                        class="flex-1 bg-white border-2 border-slate-200 p-4 rounded-2xl text-lg font-bold flex items-center justify-center gap-2 active:bg-slate-50 shadow-sm"><svg
+                            class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                        </svg>بازیابی اطلاعات</button>
+                    <input type="file" id="import-file" class="hidden" accept=".json" onchange="importBackup(event)">
+                </div>
+
+                <button type="button" onclick="openSettingsModal()"
+                    class="w-full bg-slate-100 text-slate-700 border-2 border-slate-300 p-4 rounded-2xl text-lg font-bold flex items-center justify-center gap-2 active:bg-slate-200 shadow-sm mb-6">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z">
+                        </path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>تنظیمات مدیریتی و ریست اطلاعات
+                </button>
+
+                <h3 class="font-black text-slate-800 text-xl mb-4 border-b pb-2">وضعیت کلی بدهکاران و بستانکاران:</h3>
+                <div id="global-debtors" class="space-y-3 pb-6"></div>
+            </div>
+        </main>
+
+        <nav
+            class="app-nav bg-white border-t border-slate-200 flex justify-between items-stretch no-print shadow-[0_-10px_40px_rgba(0,0,0,0.08)] z-40 w-full">
+            <button onclick="switchTab('units')" id="nav-units"
+                class="flex-1 flex flex-col items-center justify-center gap-1.5 text-indigo-600 transition-all"><svg
+                    class="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
+                    </path>
+                </svg><span class="text-[11px] sm:text-base font-bold">واحدها</span></button>
+            <button onclick="switchTab('periods')" id="nav-periods"
+                class="flex-1 flex flex-col items-center justify-center gap-1.5 text-slate-400 transition-all"><svg
+                    class="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                    </path>
+                </svg><span class="text-[11px] sm:text-base font-bold">شارژها</span></button>
+            <button onclick="switchTab('reports')" id="nav-reports"
+                class="flex-1 flex flex-col items-center justify-center gap-1.5 text-slate-400 transition-all"><svg
+                    class="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
+                    </path>
+                </svg><span class="text-[11px] sm:text-base font-bold">صندوق/بدهکاران</span></button>
+        </nav>
+
+        <div id="modal-unit"
+            class="app-overlay bg-slate-900/60 z-[60] flex items-end justify-center hidden no-print backdrop-blur-sm transition-opacity">
+            <div id="modal-unit-content"
+                class="bg-white w-full rounded-t-[40px] p-6 pb-safe slide-up overflow-y-auto max-h-[min(92%,calc(100%-var(--safe-top)))] shadow-2xl">
+                <div class="w-16 h-1.5 bg-slate-200 rounded-full mx-auto mb-6"></div>
+
+                <div class="flex justify-between items-start mb-4 gap-3">
+                    <button onclick="closeModal('unit')"
+                        class="bg-slate-800 text-white px-4 py-2.5 rounded-xl font-bold text-lg shadow-md active:scale-95 transition-all flex items-center gap-1 shrink-0">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                        بازگشت
+                    </button>
+                    <div class="flex flex-col items-end gap-2 min-w-0">
+                        <h2 id="unit-title" class="text-2xl sm:text-3xl font-black text-slate-800 text-right">تنظیمات
+                            واحد</h2>
+                        <div class="flex gap-2 flex-wrap justify-end">
+                            <button type="button" id="btn-unit-edit" onclick="startUnitEdit()"
+                                class="bg-indigo-600 text-white px-4 py-2 rounded-xl font-bold text-base shadow-md active:scale-95">ویرایش</button>
+                            <button type="button" id="btn-unit-finish-edit" onclick="finishUnitEdit()"
+                                class="hidden bg-emerald-600 text-white px-4 py-2 rounded-xl font-bold text-base shadow-md active:scale-95">پایان
+                                ویرایش</button>
+                            <button type="button" id="btn-unit-cancel-edit" onclick="cancelUnitEdit()"
+                                class="hidden bg-slate-100 text-slate-700 border-2 border-slate-300 px-4 py-2 rounded-xl font-bold text-base active:bg-slate-200">انصراف</button>
+                        </div>
+                    </div>
+                </div>
+
+                <p id="unit-view-hint"
+                    class="text-sm font-bold text-amber-900 bg-amber-50 border-2 border-amber-200 rounded-xl p-3 mb-4 leading-relaxed">
+                    برای تغییر مشخصات یا ثبت عملیات مالی، دکمهٔ <span class="text-indigo-700">ویرایش</span> را بزنید.
+                </p>
+
+                <button onclick="showUnitReport()"
+                    class="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2 mb-6 active:scale-95 transition-all shadow-lg text-lg"><svg
+                        class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path
+                            d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                        </path>
+                    </svg>مشاهده گزارش کامل عملکرد مالی</button>
+
+                <div id="unit-edit-fields" class="space-y-6 pb-12">
+                    <div class="space-y-2">
+                        <label class="text-lg font-bold text-slate-500 mr-2">نام ساکن فعلی</label>
+                        <input type="text" id="inp-unit-name" oninput="syncNames()" onblur="instantUnitUpdate()"
+                            class="w-full bg-slate-50 border-2 border-slate-200 rounded-2xl p-4 font-black outline-none focus:border-indigo-500 transition-all text-xl text-slate-800">
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-lg font-bold text-slate-500 mr-2">تعداد نفرات (برای محاسبه آب/نفرات)</label>
+                        <div class="flex items-center gap-4 bg-slate-50 rounded-2xl p-3 border-2 border-slate-200">
+                            <button type="button" id="btn-occ-minus" onclick="stepOccupants(-1)"
+                                class="w-16 h-16 bg-rose-50 text-rose-600 border-2 border-rose-200 rounded-2xl shadow-sm font-black text-5xl active:bg-rose-100 cursor-pointer">-</button>
+                            <span id="txt-unit-occupants"
+                                class="flex-1 text-center text-4xl font-black text-indigo-700">0</span>
+                            <button type="button" id="btn-occ-plus" onclick="stepOccupants(1)"
+                                class="w-16 h-16 bg-indigo-600 text-white rounded-2xl shadow-lg shadow-indigo-200 font-black text-5xl active:bg-indigo-700 cursor-pointer">+</button>
+                        </div>
+
+                        <div id="occ-warning-box"
+                            class="hidden bg-amber-50 border-2 border-amber-200 p-4 rounded-xl mt-3">
+                            <p class="text-lg font-bold text-amber-800 mb-3 leading-relaxed">دوره شارژ فعال وجود دارد.
+                                تغییر در تعداد نفرات این واحد از ماه بعد اعمال می‌شود. در دوره فعلی امکان تغییر نیست.
+                            </p>
+                            <div
+                                class="flex justify-between text-lg font-black text-amber-900 border-t-2 border-amber-200 pt-3">
+                                <span>تعداد نفرات قبل: <span id="occ-old-val"
+                                        class="text-amber-600 text-2xl"></span></span>
+                                <span>تعداد نفرات جدید: <span id="occ-new-val"
+                                        class="text-indigo-600 text-2xl"></span></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4 mt-6 p-4 bg-slate-50 rounded-2xl border-2 border-slate-200">
+                        <label
+                            class="text-lg font-bold text-slate-700 block mb-2 border-b-2 border-slate-200 pb-2">وضعیت
+                            سکونت واحد:</label>
+                        <div class="flex gap-4">
+                            <label
+                                class="flex-1 flex items-center justify-center gap-2 cursor-pointer bg-white border-2 border-slate-200 p-3 rounded-xl transition-all"
+                                id="lbl-radio-owner">
+                                <input type="radio" name="occType" value="owner" onchange="handleOccTypeChange()"
+                                    class="w-5 h-5 text-indigo-600 accent-indigo-600">
+                                <span class="font-bold text-lg">مالک</span>
+                            </label>
+                            <label
+                                class="flex-1 flex items-center justify-center gap-2 cursor-pointer bg-white border-2 border-slate-200 p-3 rounded-xl transition-all"
+                                id="lbl-radio-tenant">
+                                <input type="radio" name="occType" value="tenant" onchange="handleOccTypeChange()"
+                                    class="w-5 h-5 text-indigo-600 accent-indigo-600">
+                                <span class="font-bold text-lg">مستاجر</span>
+                            </label>
+                        </div>
+
+                        <div id="owner-info-box"
+                            class="mt-4 p-4 rounded-xl border-2 border-indigo-100 bg-indigo-50/50 space-y-4 transition-all">
+                            <h4 class="font-black text-indigo-900 border-b-2 border-indigo-100 pb-2 text-lg"
+                                id="heading-owner">مشخصات مالک</h4>
+                            <div class="space-y-3">
+                                <div>
+                                    <label id="lbl-owner-name" class="text-sm font-bold text-slate-500 block mb-1">نام
+                                        مالک</label>
+                                    <input type="text" id="inp-owner-name" onblur="instantUnitUpdate()"
+                                        class="w-full bg-white border-2 border-slate-200 rounded-xl p-3 font-bold outline-none text-lg focus:border-indigo-400 transition-all">
+                                </div>
+                                <div>
+                                    <label class="text-sm font-bold text-slate-500 block mb-1">شماره تماس مالک</label>
+                                    <div class="flex gap-2">
+                                        <input type="tel" inputmode="numeric" id="inp-owner-phone"
+                                            oninput="updateCallLinks()" onblur="instantUnitUpdate()"
+                                            placeholder="09xxxxxxxxx"
+                                            class="phone-input flex-1 bg-white border-2 border-slate-200 rounded-xl p-3 font-bold ltr text-left outline-none text-lg focus:border-indigo-400 transition-all">
+                                        <a id="btn-call-owner" href="#"
+                                            class="w-14 h-14 shrink-0 flex items-center justify-center bg-emerald-100 text-emerald-600 rounded-xl border-2 border-emerald-200 active:bg-emerald-200 transition-all opacity-50 pointer-events-none">
+                                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z">
+                                                </path>
+                                            </svg>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="tenant-info-box"
+                            class="mt-4 p-4 rounded-xl border-2 border-emerald-100 bg-emerald-50/50 space-y-4 hidden transition-all">
+                            <h4 class="font-black text-emerald-900 border-b-2 border-emerald-100 pb-2 text-lg"
+                                id="heading-tenant">مشخصات مستأجر</h4>
+                            <div class="space-y-3">
+                                <div>
+                                    <label id="lbl-tenant-name" class="text-sm font-bold text-slate-500 block mb-1">نام
+                                        مستأجر</label>
+                                    <input type="text" id="inp-tenant-name" readonly
+                                        class="w-full bg-slate-100 border-2 border-slate-200 rounded-xl p-3 font-bold outline-none text-lg text-slate-500 cursor-not-allowed">
+                                </div>
+                                <div>
+                                    <label class="text-sm font-bold text-slate-500 block mb-1">شماره تماس مستأجر</label>
+                                    <div class="flex gap-2">
+                                        <input type="tel" inputmode="numeric" id="inp-tenant-phone"
+                                            oninput="updateCallLinks()" onblur="instantUnitUpdate()"
+                                            placeholder="09xxxxxxxxx"
+                                            class="phone-input flex-1 bg-white border-2 border-slate-200 rounded-xl p-3 font-bold ltr text-left outline-none text-lg focus:border-emerald-400 transition-all">
+                                        <a id="btn-call-tenant" href="#"
+                                            class="w-14 h-14 shrink-0 flex items-center justify-center bg-emerald-100 text-emerald-600 rounded-xl border-2 border-emerald-200 active:bg-emerald-200 transition-all opacity-50 pointer-events-none">
+                                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z">
+                                                </path>
+                                            </svg>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <label
+                        class="flex items-center gap-4 p-5 bg-slate-50 rounded-2xl border-2 border-slate-200 cursor-pointer mt-4">
+                        <input type="checkbox" id="inp-unit-package" onchange="instantUnitUpdate()"
+                            class="w-6 h-6 rounded-lg text-indigo-600 accent-indigo-600">
+                        <span class="font-bold text-lg text-slate-700">پکیج دارد</span>
+                    </label>
+
+                    <div id="unit-manual-section"
+                        class="bg-indigo-50 p-5 rounded-2xl border-2 border-indigo-200 mt-8 shadow-inner">
+                        <h3 class="font-black text-xl text-indigo-900 mb-4 border-b-2 border-indigo-100 pb-3">ثبت عملیات
+                            مالی دستی (معوقه / پرداخت / بخشودگی)</h3>
+                        <input type="text" inputmode="numeric" id="manual-amt"
+                            oninput="formatMoneyInput(this); updateWords(this, 'manual-amt-words')"
+                            class="money-input w-full p-4 rounded-xl border-2 border-white text-xl focus:border-indigo-400 outline-none font-black text-indigo-900 bg-white"
+                            placeholder="مبلغ (تومان)">
+                        <div id="manual-amt-words" class="money-words text-indigo-500 mb-3 text-left mr-1"></div>
+                        <input type="text" id="manual-desc"
+                            class="w-full p-4 rounded-xl border-2 border-white mb-4 text-lg focus:border-indigo-400 outline-none font-bold text-slate-700"
+                            placeholder="شرح (مثلاً: شارژ معوقه پارسال)">
+                        <div class="grid grid-cols-2 gap-3 mb-3">
+                            <button onclick="addManualTransaction('debt')"
+                                class="bg-rose-500 text-white font-bold py-3.5 rounded-xl text-lg shadow-md active:bg-rose-600">+
+                                ثبت بدهی</button>
+                            <button onclick="addManualTransaction('payment')"
+                                class="bg-emerald-500 text-white font-bold py-3.5 rounded-xl text-lg shadow-md active:bg-emerald-600">-
+                                ثبت پرداختی</button>
+                        </div>
+                        <button onclick="addManualTransaction('forgive')"
+                            class="w-full bg-slate-200 text-slate-700 border-2 border-slate-300 font-bold py-3.5 rounded-xl text-lg shadow-sm active:bg-slate-300">حذف
+                            بدهی / بخشودگی (بدون واریز)</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="modal-report-unit" class="app-overlay bg-white z-[70] hidden flex flex-col no-print">
+            <header class="app-header bg-slate-900 text-white p-4 flex justify-between items-center shadow-md shrink-0">
+                <button onclick="closeModal('report-unit')"
+                    class="flex items-center gap-1 font-bold text-lg bg-slate-800 px-4 py-2 rounded-xl"><svg
+                        class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>بازگشت</button>
+                <h2 id="report-unit-name" class="font-black text-xl">گزارش مالی جامع</h2>
+                <button type="button" onclick="openUnitReportPrintView()"
+                    class="bg-indigo-600 px-4 py-2 rounded-xl font-bold text-base shadow-lg shadow-indigo-500/40 active:scale-95 flex items-center gap-1"><svg
+                        class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path
+                            d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z">
+                        </path>
+                    </svg>چاپ گزارش</button>
+            </header>
+            <div class="p-5 bg-slate-50 border-b-2 border-slate-200 shadow-inner">
+                <div class="flex justify-between items-center">
+                    <div id="report-unit-balance-label" class="text-lg font-bold text-slate-600">وضعیت الان:</div>
+                    <div id="report-unit-balance" class="text-5xl font-black text-rose-500" dir="ltr">0</div>
+                </div>
+                <div id="report-unit-debt-detail"></div>
+            </div>
+            <div
+                class="px-4 py-2 bg-white border-b border-slate-100 text-center text-sm font-bold text-slate-500 no-print">
+                جدید به قدیم — هر ردیف یک اتفاق · روی دوره بزنید تا جدول شارژ باز شود · <span
+                    class="text-orange-600">نارنجی = هزینه اضطراری</span>
+            </div>
+            <div class="flex-1 min-h-0 overflow-y-auto p-4 space-y-4 pb-safe" id="report-unit-body"></div>
+        </div>
+
+        <div id="modal-new-period"
+            class="app-overlay bg-slate-900/60 z-[60] flex items-center justify-center hidden p-4 backdrop-blur-sm">
+            <div class="bg-white w-full max-w-sm rounded-[32px] p-6 shadow-2xl fade-in">
+                <h2 class="text-4xl font-black mb-6 text-center text-slate-800">ایجاد دوره جدید</h2>
+
+                <div class="flex gap-2 bg-slate-100 p-1.5 rounded-2xl mb-6">
+                    <button id="tab-btn-monthly" onclick="setNewPeriodMode('monthly')"
+                        class="flex-1 py-3 rounded-xl font-bold text-lg bg-white text-indigo-600 shadow-sm transition-all">شارژ
+                        ماهانه عادی</button>
+                    <button id="tab-btn-special" onclick="setNewPeriodMode('special')"
+                        class="flex-1 py-3 rounded-xl font-bold text-lg text-slate-500 transition-all">موارد پیش‌بینی
+                        نشده</button>
+                </div>
+
+                <div id="form-new-monthly" class="space-y-4">
+                    <div class="flex gap-3">
+                        <select id="np-month"
+                            class="flex-1 border-2 border-slate-200 rounded-xl p-3 outline-none font-bold text-xl focus:border-indigo-500 bg-white text-slate-800">
+                            <option value="فروردین">فروردین</option>
+                            <option value="اردیبهشت">اردیبهشت</option>
+                            <option value="خرداد">خرداد</option>
+                            <option value="تیر">تیر</option>
+                            <option value="مرداد">مرداد</option>
+                            <option value="شهریور">شهریور</option>
+                            <option value="مهر">مهر</option>
+                            <option value="آبان">آبان</option>
+                            <option value="آذر">آذر</option>
+                            <option value="دی">دی</option>
+                            <option value="بهمن">بهمن</option>
+                            <option value="اسفند">اسفند</option>
+                        </select>
+                        <input type="text" inputmode="numeric" id="np-year"
+                            class="w-28 border-2 border-slate-200 rounded-xl p-3 outline-none text-center font-bold text-xl focus:border-indigo-500 text-slate-800"
+                            placeholder="سال">
+                    </div>
+                </div>
+
+                <div id="form-new-special" class="hidden space-y-4">
+                    <input type="text" id="np-special-title" placeholder="عنوان (مثلاً تعمیر موتورخانه)"
+                        class="w-full border-2 border-slate-200 rounded-xl p-4 outline-none font-bold text-lg focus:border-indigo-500 text-slate-800">
+                    <div class="flex gap-3 mt-2">
+                        <input type="text" inputmode="numeric" id="np-sp-year"
+                            class="w-28 border-2 border-slate-200 rounded-xl p-3 outline-none text-center font-bold text-xl focus:border-indigo-500 text-slate-800"
+                            placeholder="سال">
+                        <select id="np-sp-month"
+                            class="flex-1 border-2 border-slate-200 rounded-xl p-3 outline-none font-bold text-lg focus:border-indigo-500 text-slate-600 bg-white">
+                            <option value="فروردین">فروردین</option>
+                            <option value="اردیبهشت">اردیبهشت</option>
+                            <option value="خرداد">خرداد</option>
+                            <option value="تیر">تیر</option>
+                            <option value="مرداد">مرداد</option>
+                            <option value="شهریور">شهریور</option>
+                            <option value="مهر">مهر</option>
+                            <option value="آبان">آبان</option>
+                            <option value="آذر">آذر</option>
+                            <option value="دی">دی</option>
+                            <option value="بهمن">بهمن</option>
+                            <option value="اسفند">اسفند</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="flex gap-3 mt-8">
+                    <button onclick="closeModal('new-period')"
+                        class="flex-1 bg-slate-100 font-bold py-4 rounded-2xl text-slate-600 active:bg-slate-200 text-xl">لغو</button>
+                    <button onclick="createNewPeriod()"
+                        class="flex-[2] bg-indigo-600 text-white font-bold py-4 rounded-2xl shadow-lg shadow-indigo-200 active:bg-indigo-700 text-xl">ایجاد
+                        لیست</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="modal-period-detail"
+            class="app-overlay bg-slate-50 z-[80] hidden flex flex-col min-h-0 print-container">
+            <header
+                class="app-header bg-slate-900 text-white px-3 py-2 flex justify-between items-center gap-2 no-print shadow-md shrink-0">
+                <button type="button" id="btn-period-detail-back" onclick="closeModal('period-detail')"
+                    class="flex items-center gap-1 font-bold text-sm bg-slate-800 px-2.5 py-1.5 rounded-lg active:scale-95 shrink-0"><svg
+                        class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg><span id="btn-period-detail-back-label">بازگشت</span></button>
+                <div class="flex items-center gap-1.5 min-w-0 justify-center">
+                    <h2 class="font-black text-base sm:text-lg truncate" id="period-detail-title">جزئیات دوره</h2>
+                    <span id="period-status-badge"
+                        class="text-[10px] px-1.5 py-0.5 rounded-full font-bold shrink-0"></span>
+                </div>
+                <button onclick="printPage('notice')"
+                    class="bg-indigo-600 px-2.5 py-1.5 rounded-lg font-bold text-sm shadow-md shadow-indigo-500/30 active:scale-95 flex items-center gap-1 shrink-0"><svg
+                        class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path
+                            d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z">
+                        </path>
+                    </svg>چاپ</button>
+            </header>
+
+            <div class="flex-1 flex flex-col min-h-0 overflow-hidden" id="period-scroll-area">
+
+                <div id="period-setup-form"
+                    class="bg-white p-6 no-print border-b border-slate-200 shrink-0 overflow-y-auto max-h-full">
+                    <div class="flex flex-col gap-4 mb-6 border-b-2 border-indigo-50 pb-4">
+                        <h3 class="font-black text-indigo-900 text-xl flex items-center gap-2"><svg class="w-6 h-6"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z">
+                                </path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>تنظیمات اولیه و توزیع مبالغ</h3>
+                        <select id="f-input-mode" onchange="calculateActivePeriod()"
+                            class="bg-indigo-50 text-indigo-800 font-bold p-3 rounded-xl text-lg border-2 border-indigo-200 outline-none w-full appearance-none">
+                            <option value="rate" selected>مبلغ به ازای هر نفر/واحد (پیش‌فرض)</option>
+                            <option value="total">مبلغ کل (تقسیم خودکار)</option>
+                        </select>
+                    </div>
+
+                    <div id="setup-monthly-fields" class="grid grid-cols-2 gap-4 mb-6 hidden">
+                        <div>
+                            <label class="text-base font-bold text-slate-500 mr-1 block mb-1">شارژ ثابت <span
+                                    class="expense-unit-hint">(برای هر واحد)</span></label>
+                            <input type="text" inputmode="numeric" id="f-fix" onblur="commitExpenseChange()"
+                                oninput="formatMoneyInput(this); updateWords(this, 'f-fix-w'); calculateActivePeriod()"
+                                class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-3 money-input focus:border-indigo-400 outline-none text-xl text-indigo-900 font-bold">
+                            <div id="f-fix-w" class="money-words text-indigo-500 mt-1 ltr text-left mr-1"></div>
+                        </div>
+                        <div>
+                            <label class="text-base font-bold text-slate-500 mr-1 block mb-1">آب <span
+                                    class="expense-unit-hint">(به ازای هر نفر)</span></label>
+                            <input type="text" inputmode="numeric" id="f-wat" onblur="commitExpenseChange()"
+                                oninput="formatMoneyInput(this); updateWords(this, 'f-wat-w'); calculateActivePeriod()"
+                                class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-3 money-input focus:border-indigo-400 outline-none text-xl text-indigo-900 font-bold">
+                            <div id="f-wat-w" class="money-words text-indigo-500 mt-1 ltr text-left mr-1"></div>
+                        </div>
+                        <div>
+                            <label class="text-base font-bold text-slate-500 mr-1 block mb-1">گاز <span
+                                    class="expense-unit-hint">(به ازای هر واحد)</span></label>
+                            <input type="text" inputmode="numeric" id="f-gas" onblur="commitExpenseChange()"
+                                oninput="formatMoneyInput(this); updateWords(this, 'f-gas-w'); calculateActivePeriod()"
+                                class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-3 money-input focus:border-indigo-400 outline-none text-xl text-indigo-900 font-bold">
+                            <div id="f-gas-w" class="money-words text-indigo-500 mt-1 ltr text-left mr-1"></div>
+                        </div>
+                        <div>
+                            <label class="text-base font-bold text-slate-500 mr-1 block mb-1">برق عمومی <span
+                                    class="expense-unit-hint">(برای هر واحد)</span></label>
+                            <input type="text" inputmode="numeric" id="f-ele" onblur="commitExpenseChange()"
+                                oninput="formatMoneyInput(this); updateWords(this, 'f-ele-w'); calculateActivePeriod()"
+                                class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-3 money-input focus:border-indigo-400 outline-none text-xl text-indigo-900 font-bold">
+                            <div id="f-ele-w" class="money-words text-indigo-500 mt-1 ltr text-left mr-1"></div>
+                        </div>
+                        <div class="col-span-2">
+                            <label class="text-base font-bold text-slate-500 mr-1 block mb-1">هزینه‌های جانبی <span
+                                    class="text-[9px] text-slate-400 font-normal">(مساوی بین تمام واحدها)</span></label>
+                            <input type="text" inputmode="numeric" id="f-inc" onblur="commitExpenseChange()"
+                                oninput="formatMoneyInput(this); updateWords(this, 'f-inc-w'); calculateActivePeriod()"
+                                class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-3 money-input focus:border-indigo-400 outline-none text-xl text-indigo-900 font-bold">
+                            <div id="f-inc-w" class="money-words text-indigo-500 mt-1 ltr text-left mr-1"></div>
+                        </div>
+                        <div class="col-span-2"><label class="text-base font-bold text-slate-500 mr-1 block mb-1">توضیح
+                                هزینه جانبی (بابت چیست؟)</label><input type="text" id="f-inc-desc"
+                                onblur="commitExpenseChange(); calculateActivePeriod()"
+                                class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-3 text-lg font-bold focus:border-indigo-400 outline-none text-slate-800"
+                                placeholder="مثلاً: سرویس دوره‌ای آسانسور"></div>
+                    </div>
+
+                    <div id="setup-special-fields" class="space-y-4 mb-6 hidden">
+                        <div>
+                            <label class="text-base font-bold text-slate-500 mr-1 block mb-1">مبلغ کل هزینه پیش‌بینی
+                                نشده (تومان)</label>
+                            <input type="text" inputmode="numeric" id="f-sp-total" onblur="commitExpenseChange()"
+                                oninput="formatMoneyInput(this); updateWords(this, 'f-sp-w'); calculateActivePeriod()"
+                                class="w-full bg-amber-50 border-2 border-amber-200 rounded-xl p-4 money-input focus:border-amber-400 outline-none text-3xl text-amber-900 font-bold">
+                            <div id="f-sp-w" class="money-words text-amber-600 mt-1 ltr text-left mr-1"></div>
+                        </div>
+                        <div>
+                            <label class="text-base font-bold text-slate-500 mr-1 block mb-1">نحوه تقسیم این
+                                مبلغ:</label>
+                            <select id="f-sp-mode"
+                                onchange="toggleSpCustomView(); calculateActivePeriod(); commitExpenseChange()"
+                                class="w-full bg-white border-2 border-slate-200 rounded-xl p-3 text-lg font-bold focus:border-indigo-400 outline-none text-slate-800">
+                                <option value="all">مساوی بین تمامی ۲۰ واحد (حتی خالی)</option>
+                                <option value="active">مساوی فقط بین واحدهای دارای سکنه</option>
+                                <option value="custom">انتخاب واحدهای خاص</option>
+                            </select>
+                        </div>
+                        <div id="f-sp-custom-units"
+                            class="hidden mt-3 p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl">
+                            <label
+                                class="text-base font-bold text-slate-700 mb-3 block border-b-2 border-slate-200 pb-2">واحدهای
+                                مشمول را انتخاب کنید:</label>
+                            <div class="grid grid-cols-4 gap-4" id="custom-units-grid"></div>
+                        </div>
+                    </div>
+
+                    <label id="f-exempt-empty-wrap"
+                        class="period-option-box flex items-center gap-3 p-4 rounded-2xl border-2 cursor-pointer mb-3">
+                        <input type="checkbox" id="f-exempt-empty" checked
+                            onchange="calculateActivePeriod(); commitExpenseChange()"
+                            class="w-6 h-6 rounded-lg period-option-check">
+                        <span class="text-lg font-bold leading-snug period-option-label">معافیت واحدهای خالی، از پرداخت
+                            کلیه قبوض</span>
+                    </label>
+                    <label
+                        class="period-option-box flex items-center gap-3 p-4 rounded-2xl border-2 cursor-pointer mb-6">
+                        <input type="checkbox" id="f-round" onchange="calculateActivePeriod(); commitExpenseChange()"
+                            class="w-6 h-6 rounded-lg period-option-check">
+                        <span class="text-lg font-bold period-option-label">رند کردن به بالا تا سقف ۵۰هزار تومان</span>
+                    </label>
+
+                    <button onclick="startPeriod()" id="btn-start-period"
+                        class="w-full bg-indigo-600 text-white font-black py-4 rounded-2xl shadow-lg shadow-indigo-200 active:scale-95 transition-all text-xl flex justify-center items-center gap-2">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
+                            </path>
+                        </svg>
+                        شروع دوره و قفل مقادیر
+                    </button>
+                </div>
+
+                <div id="period-locked-summary"
+                    class="bg-slate-800 text-white p-4 shrink-0 hidden no-print z-20 relative">
+                    <div class="flex justify-between items-center mb-3 border-b border-slate-700 pb-2">
+                        <span id="period-locked-title"
+                            class="text-lg font-bold text-emerald-400 flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
+                                </path>
+                            </svg>
+                            <span id="period-locked-title-text">شارژ با مبالغ زیر نوشته شده است:</span>
+                        </span>
+                    </div>
+                    <div class="flex flex-wrap gap-2 text-base font-bold" id="locked-summary-grid">
+                    </div>
+                </div>
+
+                <div id="period-preview-hint"
+                    class="hidden shrink-0 bg-amber-50 text-amber-800 text-base font-bold text-center py-2 px-4 border-b border-amber-200 no-print">
+                    پیش‌نمایش محاسبات — پس از تأیید، «شروع دوره و قفل مقادیر» را بزنید</div>
+                <div id="period-print-header" class="period-print-header-wrap" aria-hidden="true"></div>
+                <div id="period-table-wrapper" class="hidden flex-1 overflow-auto bg-white table-container w-full">
+                    <table class="w-full text-right text-lg print-table align-middle">
+                        <thead class="sticky-head" id="period-table-head"></thead>
+                        <tbody id="period-table-body" class="divide-y divide-slate-200 print:divide-slate-300"></tbody>
+                        <tfoot class="bg-slate-800 text-white font-black print:bg-slate-800 sticky bottom-0 z-20"
+                            id="period-table-foot"></tfoot>
+                    </table>
+
+                    <div id="period-actions" class="mt-8 no-print px-4 space-y-4 pb-safe">
+                        <button onclick="requestDeletePeriod()"
+                            class="w-full text-rose-500 bg-white border-2 border-rose-200 font-bold py-4 rounded-2xl text-lg active:bg-rose-50 flex items-center justify-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                </path>
+                            </svg>
+                            حذف کامل این دوره از سیستم
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="notice-print-view" class="hidden notice-print w-full bg-white p-8">
+                <h1 class="text-5xl font-black text-center mb-8 border-b-4 border-black pb-4 uppercase tracking-widest">
+                    اطلاعیه شارژ ساختمان پارس</h1>
+                <table
+                    class="w-full border-collapse border-2 border-black notice-table text-center text-xl font-bold mt-4">
+                    <thead id="notice-thead"></thead>
+                    <tbody id="notice-tbody"></tbody>
+                </table>
+                <div id="notice-desc-container"
+                    class="mt-6 text-xl font-bold hidden border-2 border-black p-4 bg-gray-100"></div>
+                <h2 class="text-3xl font-black text-center mt-12 pt-6 border-t-2 border-black border-dashed">شارژ ماه:
+                    <span id="notice-month-name"></span>
+                </h2>
+            </div>
+        </div>
+
+        <div id="modal-report-view" class="app-overlay bg-white z-[90] hidden flex flex-col min-h-0 print-container">
+            <header
+                class="app-header bg-slate-900 text-white p-4 flex justify-between items-center no-print shadow-md shrink-0">
+                <button onclick="closeModal('report-view')"
+                    class="flex items-center gap-1 font-bold text-lg bg-slate-800 px-4 py-2 rounded-xl active:scale-95"><svg
+                        class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>بازگشت</button>
+                <h2 class="font-black text-xl" id="report-view-title">گزارش</h2>
+                <button onclick="executeReportViewPrint()"
+                    class="bg-indigo-600 px-4 py-2 rounded-xl font-bold text-base shadow-lg shadow-indigo-500/40 active:scale-95 flex items-center gap-1"><svg
+                        class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path
+                            d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z">
+                        </path>
+                    </svg>چاپ گزارش</button>
+            </header>
+            <div class="flex-1 min-h-0 p-6 overflow-y-auto pb-safe" id="report-view-content"></div>
+        </div>
+
+        <div id="notice-print-modal" class="app-overlay hidden z-[110] flex flex-col bg-white min-h-0">
+            <div
+                class="notice-print-toolbar shrink-0 flex justify-between items-center gap-2 p-4 border-b border-slate-200 bg-slate-900 text-white shadow-md">
+                <button type="button" onclick="closeNoticePrintPreview()"
+                    class="font-bold text-base bg-slate-800 px-4 py-2 rounded-xl active:scale-95">انصراف</button>
+                <span class="font-black text-lg text-center flex-1">پیش‌نمایش چاپ اطلاعیه</span>
+                <button type="button" onclick="executeNoticePrint()"
+                    class="bg-indigo-600 px-4 py-2 rounded-xl font-bold text-base shadow-lg active:scale-95">چاپ</button>
+            </div>
+            <div class="notice-print-scroll flex-1 min-h-0 overflow-y-auto p-4 pb-safe bg-white">
+                <div id="notice-print-sheet" class="notice-print-sheet"></div>
+            </div>
+        </div>
+
+        <div id="toast"></div>
+
+        <div id="app-exit-screen"
+            class="hidden fixed inset-0 z-[250] bg-white flex flex-col items-center justify-center p-8 text-center">
+            <h2 class="text-3xl font-black text-slate-900 mb-4">خروج از برنامه</h2>
+            <p class="text-lg font-bold text-slate-600 leading-relaxed max-w-md">برای بستن کامل، تب مرورگر را ببندید یا
+                از لیست برنامه‌های اخیر خارج شوید.</p>
+            <button type="button" onclick="cancelExitScreen()"
+                class="mt-8 bg-indigo-600 text-white font-black py-4 px-10 rounded-2xl text-xl shadow-lg active:scale-95">بازگشت
+                به برنامه</button>
+        </div>
+
+        <div id="modal-alert"
+            class="app-overlay bg-slate-900/80 z-[100] flex items-center justify-center hidden p-6 backdrop-blur-sm transition-opacity">
+            <div class="bg-white rounded-[32px] p-8 w-full max-w-sm text-center shadow-2xl fade-in">
+                <div id="alert-icon" class="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6"></div>
+                <h3 class="text-3xl font-black mb-3" id="alert-title">پیام</h3>
+                <p class="text-slate-600 text-xl mb-8 font-bold leading-relaxed" id="alert-message"></p>
+                <button onclick="closeAlert()"
+                    class="w-full bg-slate-900 text-white font-black py-4 rounded-2xl active:scale-95 text-xl shadow-lg">متوجه
+                    شدم</button>
+            </div>
+        </div>
+
+        <div id="modal-init-fund"
+            class="app-overlay bg-slate-900/80 z-[100] flex items-center justify-center hidden p-6 backdrop-blur-sm transition-opacity">
+            <div class="bg-white rounded-[32px] p-8 w-full max-w-sm shadow-2xl fade-in">
+                <h3 class="text-3xl font-black mb-2 text-center">موجودی اولیه صندوق</h3>
+                <p class="text-slate-500 text-base font-bold text-center mb-5 leading-relaxed">فقط برای ثبت مبلغ شروع
+                    کار صندوق است و روی موجودی فعلی (دریافت‌ها و مخارج) اثر مستقیم ندارد.</p>
+                <label class="text-base text-slate-600 font-bold mb-2 block">مبلغ اولیه (تومان)</label>
+                <input type="text" inputmode="numeric" id="inp-init-fund"
+                    oninput="formatMoneyInput(this); updateWords(this, 'init-fund-w')"
+                    class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-3 text-center text-slate-900 font-black outline-none ltr text-xl focus:border-indigo-400 transition-colors">
+                <div id="init-fund-w" class="money-words text-indigo-600 mt-2 text-center"></div>
+                <div class="flex gap-3 mt-6">
+                    <button type="button" onclick="closeInitFundModal()"
+                        class="flex-1 bg-slate-100 font-black py-4 rounded-2xl active:bg-slate-200 text-xl text-slate-700">لغو</button>
+                    <button type="button" onclick="confirmInitFund()"
+                        class="flex-1 bg-indigo-600 text-white font-black py-4 rounded-2xl active:scale-95 text-xl shadow-lg shadow-indigo-200">ذخیره</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="modal-deposits-report"
+            class="app-overlay bg-slate-900/80 z-[100] flex items-center justify-center hidden p-6 backdrop-blur-sm transition-opacity">
+            <div class="bg-white rounded-[32px] p-6 w-full max-w-md shadow-2xl fade-in max-h-[90vh] overflow-y-auto">
+                <h3 class="text-2xl font-black mb-2 text-center text-slate-800">گزارش خلاصه واریزی‌ها</h3>
+                <p class="text-slate-500 text-sm font-bold text-center mb-5 leading-relaxed">ورودی صندوق و تاریخچه بدهی
+                    — منبع ثبت: سیستمی / تایید دستی در دوره / عملیات دستی</p>
+                <label class="text-base font-bold text-slate-700 block mb-3">بازهٔ شارژها:</label>
+                <div class="space-y-2 mb-4" id="dep-report-range-list">
+                    <label
+                        class="flex items-center gap-3 p-3 rounded-xl border-2 border-slate-200 cursor-pointer has-[:checked]:border-emerald-400 has-[:checked]:bg-emerald-50">
+                        <input type="radio" name="dep-report-range" value="all" checked
+                            class="w-5 h-5 accent-emerald-600" onchange="onDepReportRangeChange()">
+                        <span class="font-bold text-slate-800">تمام شارژهای شروع‌شده</span>
+                    </label>
+                    <label
+                        class="flex items-center gap-3 p-3 rounded-xl border-2 border-slate-200 cursor-pointer has-[:checked]:border-emerald-400 has-[:checked]:bg-emerald-50">
+                        <input type="radio" name="dep-report-range" value="1" class="w-5 h-5 accent-emerald-600"
+                            onchange="onDepReportRangeChange()">
+                        <span class="font-bold text-slate-800">آخرین شارژ (۱ دوره)</span>
+                    </label>
+                    <label
+                        class="flex items-center gap-3 p-3 rounded-xl border-2 border-slate-200 cursor-pointer has-[:checked]:border-emerald-400 has-[:checked]:bg-emerald-50">
+                        <input type="radio" name="dep-report-range" value="3" class="w-5 h-5 accent-emerald-600"
+                            onchange="onDepReportRangeChange()">
+                        <span class="font-bold text-slate-800">۳ شارژ اخیر</span>
+                    </label>
+                    <label
+                        class="flex items-center gap-3 p-3 rounded-xl border-2 border-slate-200 cursor-pointer has-[:checked]:border-emerald-400 has-[:checked]:bg-emerald-50">
+                        <input type="radio" name="dep-report-range" value="6" class="w-5 h-5 accent-emerald-600"
+                            onchange="onDepReportRangeChange()">
+                        <span class="font-bold text-slate-800">۶ شارژ اخیر</span>
+                    </label>
+                    <label
+                        class="flex items-center gap-3 p-3 rounded-xl border-2 border-slate-200 cursor-pointer has-[:checked]:border-emerald-400 has-[:checked]:bg-emerald-50">
+                        <input type="radio" name="dep-report-range" value="12" class="w-5 h-5 accent-emerald-600"
+                            onchange="onDepReportRangeChange()">
+                        <span class="font-bold text-slate-800">۱۲ شارژ اخیر</span>
+                    </label>
+                    <label
+                        class="flex items-center gap-3 p-3 rounded-xl border-2 border-slate-200 cursor-pointer has-[:checked]:border-emerald-400 has-[:checked]:bg-emerald-50">
+                        <input type="radio" name="dep-report-range" value="custom"
+                            class="w-5 h-5 accent-emerald-600 shrink-0" onchange="onDepReportRangeChange()">
+                        <span class="font-bold text-slate-800 shrink-0">تعداد دلخواه:</span>
+                        <input type="text" inputmode="numeric" id="dep-report-custom-n" disabled placeholder="مثلاً ۲۴"
+                            oninput="formatMoneyInput(this)"
+                            class="flex-1 min-w-0 bg-white border-2 border-slate-200 rounded-lg p-2 text-center font-black text-lg outline-none focus:border-emerald-400 disabled:opacity-40 disabled:bg-slate-100"
+                            onclick="event.stopPropagation(); document.querySelector('input[name=dep-report-range][value=custom]').checked=true; onDepReportRangeChange();">
+                        <span class="text-sm font-bold text-slate-500 shrink-0">شارژ</span>
+                    </label>
+                </div>
+                <p class="text-[11px] text-slate-400 font-bold mb-4 text-center">عملیات دستی خارج از دوره همیشه در گزارش
+                    است. شارژ و تیک‌ها فقط در بازهٔ انتخاب‌شده.</p>
+                <div class="flex gap-3">
+                    <button type="button" onclick="closeModal('deposits-report')"
+                        class="flex-1 bg-slate-100 font-black py-4 rounded-2xl active:bg-slate-200 text-lg text-slate-700">لغو</button>
+                    <button type="button" onclick="generateDepositsReport()"
+                        class="flex-1 bg-emerald-600 text-white font-black py-4 rounded-2xl active:scale-95 text-lg shadow-lg shadow-emerald-200">نمایش
+                        گزارش</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="modal-confirm"
+            class="app-overlay bg-slate-900/80 z-[100] flex items-center justify-center hidden p-6 backdrop-blur-sm transition-opacity">
+            <div class="bg-white rounded-[32px] p-8 w-full max-w-sm text-center shadow-2xl fade-in">
+                <div id="confirm-icon-box" class="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                        </path>
+                    </svg>
+                </div>
+                <h3 class="text-3xl font-black mb-3" id="confirm-title">تاییدیه</h3>
+                <p class="text-slate-600 text-lg mb-8 font-bold leading-relaxed" id="confirm-msg"></p>
+                <div class="flex gap-3">
+                    <button id="confirm-no" onclick="closeConfirm(true)"
+                        class="flex-1 bg-slate-100 font-black py-4 rounded-2xl active:bg-slate-200 text-xl text-slate-700 shadow-sm border border-slate-200">لغو</button>
+                    <button id="confirm-yes" onclick="executeConfirm()"
+                        class="flex-1 text-white font-black py-4 rounded-2xl active:scale-95 text-xl shadow-lg">بله</button>
+                </div>
+            </div>
+        </div>
+        <div id="modal-settings"
+            class="app-overlay bg-slate-900/80 z-[100] flex items-center justify-center hidden p-6 backdrop-blur-sm transition-opacity">
+            <div class="bg-white rounded-[32px] p-6 w-full max-w-md shadow-2xl fade-in max-h-[90vh] overflow-y-auto">
+                <h3 class="text-2xl font-black mb-6 text-center text-slate-800">تنظیمات مدیریتی</h3>
+
+                <div class="space-y-4 mb-6">
+                    <button type="button" onclick="resetPeriodsData()"
+                        class="w-full bg-orange-50 border-2 border-orange-200 text-orange-700 font-bold py-3 rounded-2xl active:bg-orange-100 flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                            </path>
+                        </svg>
+                        حذف تمام شارژها و دوره‌های مالی
+                    </button>
+                    <button type="button" onclick="resetUnitsData()"
+                        class="w-full bg-blue-50 border-2 border-blue-200 text-blue-700 font-bold py-3 rounded-2xl active:bg-blue-100 flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+                            </path>
+                        </svg>
+                        ریست اطلاعات واحدها و تراکنش‌های دستی
+                    </button>
+                    <button type="button" onclick="resetFundData()"
+                        class="w-full bg-emerald-50 border-2 border-emerald-200 text-emerald-700 font-bold py-3 rounded-2xl active:bg-emerald-100 flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                            </path>
+                        </svg>
+                        ریست موجودی اولیه صندوق
+                    </button>
+                    <div class="h-px bg-slate-200 my-4"></div>
+                    <button type="button" onclick="resetAllApp()"
+                        class="w-full bg-rose-600 text-white shadow-lg shadow-rose-200 font-black py-4 rounded-2xl active:scale-95 flex items-center justify-center gap-2">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
+                            </path>
+                        </svg>
+                        ریست کامل (پاک کردن همه اطلاعات)
+                    </button>
+                </div>
+
+                <button type="button" onclick="closeSettingsModal()"
+                    class="w-full bg-slate-100 font-black py-4 rounded-2xl active:bg-slate-200 text-lg text-slate-700">بستن</button>
+            </div>
+        </div>
+    </div>
+    <script src="js/utils.js"></script>
+    <script src="js/state.js"></script>
+    <script src="js/logic.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/reports.js"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>
