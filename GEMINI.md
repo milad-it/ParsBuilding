@@ -1,9 +1,11 @@
-# Project Guidelines & Rules
+# دستورالعمل‌های اختصاصی پروژه ParsBuilding
 
-## Automatic Git Commit & Push Rule
-- **Mandatory Workflow**: After completing any code, documentation, or configuration change in this project, the agent must automatically:
-  1. Review `git status` to ensure only intended project files are staged.
-  2. Stage the changes (`git add`).
-  3. Create a clear, descriptive commit message in Persian or English explaining the changes made (`git commit -m "..."`).
-  4. Push the commit to the remote repository on GitHub (`git push origin main`).
-- **Confirmation**: After pushing, report the commit message and push status to the user.
+## قانون الزامی ثبت و ارسال تغییرات به گیت‌هاب (Auto Git Commit & Push)
+
+- **پس از انجام هر تغییر:**
+  به محض ایجاد، ویرایش، حذف، یا بهینه‌سازی فایل‌ها و کدهای این پروژه:
+  1. کلیه تغییرات اعمال‌شده بررسی شوند (`git status`).
+  2. فایل‌های مرتبط به صورت دقیق مرحله‌بندی شوند (`git add .` یا نام فایل‌ها).
+  3. یک پیام کامیت (Commit Message) واضح، گویا و استاندارد که دقیقاً تغییرات را شرح می‌دهد ثبت شود (`git commit -m "..."`).
+  4. تغییرات فوراً به شاخه اصلی روی گیت‌هاب پوش (Push) شوند (`git push origin main`).
+  5. نتیجه به همراه توضیح تغییرات و وضعیت پوش به کاربر گزارش داده شود.
