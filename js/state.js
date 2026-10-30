@@ -24,6 +24,9 @@ function saveDB(pushHistory = true) {
         }
     }
     try { localStorage.setItem('app_db_pars_v6', newStateStr); } catch (e) { }
+    if (typeof idbSet === 'function') {
+        idbSet('app_db_pars_v6', JSON.parse(newStateStr)).catch(() => {});
+    }
     updateUndoRedoButtons();
     updateGlobalReports();
 }

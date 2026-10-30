@@ -321,10 +321,20 @@ window.addEventListener('popstate', function (ev) {
 });
 
 // App Initialization
-function init() {
-    const saved = localStorage.getItem('app_db_pars_v6');
+async function init() {
+    let saved = localStorage.getItem('app_db_pars_v6');
+    if (!saved && typeof idbGet === 'function') {
+        try {
+            const fromIDB = await idbGet('app_db_pars_v6');
+            if (fromIDB) {
+                db = fromIDB;
+                saved = JSON.stringify(db);
+                try { localStorage.setItem('app_db_pars_v6', saved); } catch (e) { }
+            }
+        } catch (e) { }
+    }
     if (saved) {
-        db = JSON.parse(saved);
+        db = typeof saved === 'string' ? JSON.parse(saved) : saved;
     } else {
         // Migration
         const oldDb = localStorage.getItem('app_db_pars_final') || localStorage.getItem('app_db_pars_v5') || localStorage.getItem('app_db_pars');
@@ -368,6 +378,18 @@ function init() {
     updateNewPeriodButton();
     updateUndoRedoButtons();
     initNavStack('units');
+
+    // Sync state to IndexedDB for robust local persistence
+    if (typeof idbSet === 'function') {
+        idbSet('app_db_pars_v6', db).catch(() => {});
+    }
+
+    // Register PWA Service Worker
+    if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js').catch(() => {});
+        });
+    }
 }
 
 /** جلوگیری از رفرش صفحه با کشیدن به پایین (pull-to-refresh) */

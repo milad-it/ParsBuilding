@@ -410,6 +410,123 @@ function showUnitReport() {
     showUnitReportOnly(activeUnitId);
 }
 
+// --- Share & Messaging Integration ---
+function generateUnitShareText(unitId) {
+    const u = findUnit(unitId);
+    if (!u) return '';
+    const totalDebt = getUnitTotalDebt(u.id);
+    const lines = collectUnitDebtDetailLines(u.id);
+    const dateStr = typeof getPersianDateTime === 'function' ? getPersianDateTime().split('،')[0].trim() : '';
+    const occupantName = u.name ? ` (${u.name})` : '';
+
+    let statusLine = '';
+    if (Math.abs(totalDebt) < 0.1) {
+        statusLine = '✅ وضعیت حساب: تسویه کامل (۰ تومان)';
+    } else if (totalDebt > 0) {
+        statusLine = `🔴 مبلغ بدهی قابل پرداخت: ${fmt(totalDebt)} تومان`;
+    } else {
+        statusLine = `🟢 وضعیت حساب: ${fmt(Math.abs(totalDebt))} تومان (بستانکار)`;
+    }
+
+    let detailLines = '';
+    if (lines && lines.length > 0) {
+        detailLines = '\n\n📋 ریز اقلام:\n' + lines.map(l => {
+            const tag = l.credit ? ' [بستانکاری]' : '';
+            return `▫️ ${l.label}: ${fmt(l.amount)} تومان${tag}`;
+        }).join('\n');
+    }
+
+    return `🏢 مجتمع مسکونی پارس\n📄 صورت‌حساب مالی واحد ${u.id}${occupantName}\n📅 تاریخ: ${dateStr}\n\n${statusLine}${detailLines}\n\nلطفاً نسبت به تسویه حساب و ارسال فیش واریزی به مدیریت ساختمان اقدام فرمایید.\nبا احترام — مدیریت ساختمان پارس`;
+}
+
+function openShareUnitModal() {
+    const u = findUnit(activeUnitId);
+    if (!u) return;
+    const text = generateUnitShareText(u.id);
+    const textarea = document.getElementById('txt-share-content');
+    if (textarea) textarea.value = text;
+
+    const recipientSpan = document.getElementById('share-unit-recipient');
+    if (recipientSpan) {
+        const phone = u.occType === 'tenant' ? (u.tenantPhone || u.ownerPhone) : (u.ownerPhone || u.tenantPhone);
+        recipientSpan.innerText = `واحد ${u.id}${u.name ? ' (' + u.name + ')' : ''}${phone ? ' — ' + phone : ''}`;
+    }
+
+    const modal = document.getElementById('modal-share-unit');
+    if (modal) modal.classList.remove('hidden');
+}
+
+function closeShareUnitModal() {
+    const modal = document.getElementById('modal-share-unit');
+    if (modal) modal.classList.add('hidden');
+}
+
+function copyShareText() {
+    const textarea = document.getElementById('txt-share-content');
+    const text = textarea ? textarea.value : '';
+    if (!text) return;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+            showToast('متن صورت‌حساب کپی شد', 'success');
+        }).catch(() => {
+            fallbackCopyText(text);
+        });
+    } else {
+        fallbackCopyText(text);
+    }
+}
+
+function fallbackCopyText(text) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+        document.execCommand('copy');
+        showToast('متن صورت‌حساب کپی شد', 'success');
+    } catch (e) {
+        showToast('خطا در کپی متن', 'danger');
+    }
+    document.body.removeChild(ta);
+}
+
+function executeNativeShare() {
+    const textarea = document.getElementById('txt-share-content');
+    const text = textarea ? textarea.value : '';
+    if (!text) return;
+    if (navigator.share) {
+        navigator.share({
+            title: 'صورت‌حساب ساختمان پارس',
+            text: text
+        }).catch(() => {});
+    } else {
+        copyShareText();
+    }
+}
+
+function shareViaMessenger(type) {
+    const u = findUnit(activeUnitId);
+    const textarea = document.getElementById('txt-share-content');
+    const text = textarea ? textarea.value : '';
+    const phone = u ? (u.occType === 'tenant' ? (u.tenantPhone || u.ownerPhone) : (u.ownerPhone || u.tenantPhone)) : '';
+    const encoded = encodeURIComponent(text);
+
+    let cleanPhone = (phone || '').replace(/[^0-9]/g, '');
+    if (cleanPhone.startsWith('09')) cleanPhone = '98' + cleanPhone.substring(1);
+
+    if (type === 'sms') {
+        const smsUrl = phone ? `sms:${phone}?body=${encoded}` : `sms:?body=${encoded}`;
+        window.open(smsUrl, '_blank');
+    } else if (type === 'whatsapp') {
+        const waUrl = cleanPhone ? `https://wa.me/${cleanPhone}?text=${encoded}` : `https://api.whatsapp.com/send?text=${encoded}`;
+        window.open(waUrl, '_blank');
+    } else if (type === 'eitaa') {
+        window.open(`https://eitaa.com/share/url?text=${encoded}`, '_blank');
+    } else if (type === 'bale') {
+        window.open(`https://ble.ir/share/url?text=${encoded}`, '_blank');
+    }
+}
+
 // --- Periods ---
 function renderPeriods() {
     const list = document.getElementById('periods-list'); list.innerHTML = '';
@@ -1337,7 +1454,7 @@ function buildNoticePrintTableHtml(p, hasIncNote) {
 }
 
 const NOTICE_PRINT_DOC_STYLES = `
-@import url('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css');
+@import url('css/fonts/vazirmatn.css');
 
 @page { size: A4 portrait; margin: 6mm 8mm; }
 html, body {
@@ -1710,7 +1827,7 @@ function closeModal(id) {
 }
 
 function hideAllModalsOnly() {
-    ['modal-unit', 'modal-report-unit', 'modal-new-period', 'modal-period-detail', 'modal-alert', 'modal-confirm', 'modal-init-fund', 'modal-deposits-report', 'modal-report-view', 'notice-print-modal', 'modal-settings'].forEach(id => {
+    ['modal-unit', 'modal-report-unit', 'modal-new-period', 'modal-period-detail', 'modal-alert', 'modal-confirm', 'modal-init-fund', 'modal-deposits-report', 'modal-report-view', 'notice-print-modal', 'modal-settings', 'modal-share-unit'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.classList.add('hidden');
     });
