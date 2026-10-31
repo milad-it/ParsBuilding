@@ -1,0 +1,72 @@
+--- a/server/prisma/schema.prisma
++++ b/server/prisma/schema.prisma
+@@ -281,7 +281,7 @@ model Resident {
+   user            User?           @relation(fields: [userId], references: [id], onDelete: SetNull)
+   unitAssignments UnitResident[]
+ 
+-  @@index([complexId, phone])
++  @@unique([complexId, phone])
+   @@index([complexId, nationalCode])
+   @@map("residents")
+ }
+@@ -356,6 +356,7 @@ model Period {
+   customUnits         PeriodCustomUnit[]
+   transactions        LedgerTransaction[]
+ 
++  @@unique([complexId, type, year, month])
+   @@index([complexId, status, year, month])
+   @@index([complexId, type])
+   @@map("periods")
+@@ -415,7 +416,7 @@ model UnitCharge {
+   // روابط
+   complex                 Complex         @relation(fields: [complexId], references: [id], onDelete: Cascade)
+   period                  Period          @relation(fields: [periodId], references: [id], onDelete: Cascade)
+-  unit                    Unit            @relation(fields: [unitId], references: [id], onDelete: Cascade)
++  unit                    Unit            @relation(fields: [unitId], references: [id], onDelete: Restrict)
+   transactions            LedgerTransaction[]
+ 
+   @@unique([periodId, unitId])
+@@ -448,7 +449,7 @@ model LedgerTransaction {
+ 
+   // روابط
+   complex         Complex         @relation(fields: [complexId], references: [id], onDelete: Cascade)
+-  unit            Unit            @relation(fields: [unitId], references: [id], onDelete: Cascade)
++  unit            Unit            @relation(fields: [unitId], references: [id], onDelete: Restrict)
+   period          Period?         @relation(fields: [periodId], references: [id], onDelete: SetNull)
+   charge          UnitCharge?     @relation(fields: [chargeId], references: [id], onDelete: SetNull)
+   createdBy       User?           @relation("TxCreator", fields: [createdById], references: [id], onDelete: SetNull)
+@@ -497,7 +498,7 @@ model ChatMessage {
+   id              String          @id @default(uuid())
+   complexId       String
+   buildingId      String?
+-  senderId        String
++  senderId        String?
+   content         String
+   isNotice        Boolean         @default(false) // اطلاعیه رسمی مدیر در برد دیجیتال
+   attachments     Json?           // لیست فایل‌ها یا تصاویر ضمیمه
+@@ -505,7 +506,7 @@ model ChatMessage {
+ 
+   complex         Complex         @relation(fields: [complexId], references: [id], onDelete: Cascade)
+   building        Building?       @relation(fields: [buildingId], references: [id], onDelete: SetNull)
+-  sender          User            @relation(fields: [senderId], references: [id], onDelete: Cascade)
++  sender          User?           @relation(fields: [senderId], references: [id], onDelete: SetNull)
+ 
+   @@index([complexId, createdAt])
+   @@index([complexId, buildingId, createdAt])
+@@ -516,7 +517,7 @@ model ReceiptVerification {
+   id              String          @id @default(uuid())
+   complexId       String
+   unitId          String
+-  uploadedById    String
++  uploadedById    String?
+   imageUrl        String          // مسیر فایل رسید در استوریج امن
+   status          ReceiptStatus   @default(PENDING)
+   extractedAmount Decimal?        @db.Decimal(12, 2) // مبلغ استخراج‌شده با هوش مصنوعی
+@@ -531,7 +532,7 @@ model ReceiptVerification {
+ 
+   complex         Complex         @relation(fields: [complexId], references: [id], onDelete: Cascade)
+   unit            Unit            @relation(fields: [unitId], references: [id], onDelete: Cascade)
+-  uploadedBy      User            @relation("ReceiptUploader", fields: [uploadedById], references: [id], onDelete: Cascade)
++  uploadedBy      User?           @relation("ReceiptUploader", fields: [uploadedById], references: [id], onDelete: SetNull)
+   verifiedBy      User?           @relation("ReceiptVerifier", fields: [verifiedById], references: [id], onDelete: SetNull)
+   transactions    LedgerTransaction[]
