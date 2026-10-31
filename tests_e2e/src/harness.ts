@@ -353,10 +353,13 @@ export class TestHarness {
       const occupants = parseInt(normalizeDigits(u.occupants || u.tedad || 1), 10);
       const balance = parseDecimal(u.balance || 0);
 
+      const rawUnitNumber = u.unitNumber ?? u.vahed ?? (unitsImported + 1);
+      const unitNumber = parseInt(normalizeDigits(rawUnitNumber), 10);
+
       const createdUnit = this.createUnit({
         complexId,
         buildingId: bld.id,
-        unitNumber: u.unitNumber || u.vahed || (unitsImported + 1),
+        unitNumber,
         floor: u.floor || 1,
         area,
         occupants,
