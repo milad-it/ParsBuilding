@@ -22,10 +22,10 @@ Manage and monitor Project Orchestrator executing the SaaS building management p
 ## User Context
 - **Last user request**: Approved task prompt received
 - **Pending clarifications**: none
-- **Delivered results**: Milestone 1 PASSED Gate 1 (20/20 unit, 187/187 E2E, 2,504 stress tests; zero issues). Milestone 2 (Auth, RBAC, Audit Logging & Extensibility) initiated with 3 parallel Explorers.
+- **Delivered results**: Milestone 1 PASSED Gate 1. Milestone 2 Iteration 1 caught 4 security edge cases (IDOR, Bearer tenant extraction, WS unit room scoping, 429 status); 3 specialized explorers actively formulating drop-in fixes.
 
 ## Project Status
-- **Phase**: in progress (Milestone 2: Security Hardening, Authentication, RBAC, Immutable Audit Logging)
+- **Phase**: in progress (Milestone 2 Iteration 2: Remediation of IDOR, Token Context & WS Scoping)
 
 ## Victory Audit Status
 - **Triggered**: no

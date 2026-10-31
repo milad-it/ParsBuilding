@@ -148,23 +148,21 @@ describe('Tier 5 Adversarial: Milestone 2 Authentication & Granular RBAC Hardeni
       );
     });
 
-    it('ADV-M2-4.2 [DEFECT DETECTED]: GET /receipts/:id FAILS to enforce resident unit ownership within same complex', () => {
-      // In receiptRoutes.ts line 88:
-      // if (request.user!.role !== 'SUPER_ADMIN' && request.user!.complexId !== receipt.complexId)
-      // Notice: It ONLY checks complexId! It DOES NOT check if user.role === 'RESIDENT' and unitId matches!
+    it('ADV-M2-4.2 [DEFECT REMEDIATED]: GET /receipts/:id MUST enforce resident unit ownership within same complex', () => {
       const getReceiptHandler = receiptRoutesCode.match(/fastify\.get\('\/receipts\/:id'[\s\S]*?\n  \}\);/);
       assert.ok(getReceiptHandler, 'GET /receipts/:id route must be defined');
 
       const handlerBody = getReceiptHandler[0];
       const hasResidentUnitCheck = handlerBody.includes('requireResidentUnitAccess') ||
                                    handlerBody.includes('user.unitIds.includes') ||
-                                   handlerBody.includes('receipt.uploadedById === request.user');
+                                   handlerBody.includes('receipt.uploadedById === request.user') ||
+                                   handlerBody.includes('receipt.uploadedById === user.id');
 
-      // Assert that this check is currently MISSING in receiptRoutes.ts!
+      // Assert that this check is strictly enforced in receiptRoutes.ts!
       assert.equal(
         hasResidentUnitCheck,
-        false,
-        'IDOR VULNERABILITY CONFIRMED: GET /receipts/:id does NOT verify resident unit ownership, allowing any resident in the complex to view others payment slips!'
+        true,
+        'GET /receipts/:id MUST verify resident unit ownership'
       );
     });
 

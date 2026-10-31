@@ -87,23 +87,17 @@ describe('Tier 5 Adversarial Hardening (M2): Audit Immutability, Rate Limiting &
       assert.ok(secCode.includes("retryAfter:"));
     });
 
-    it('ADV-M2.2.3 [FAILURE ANALYSIS]: Check if errorHandler properly maps rate limit errors or swallows as 500', () => {
-      // Notice: If errorHandler does not explicitly handle error.status === 429 or RFC 7807 problem details,
-      // Fastify converts the rate limit error into a 500 Internal Server Error!
+    it('ADV-M2.2.3 [ENFORCED]: Check if errorHandler properly maps rate limit errors to 429 RFC 7807', () => {
+      // Fastify converts unhandled rate limit errors into 500 unless explicitly intercepted
       const handlesRateLimitInErrorHandler =
         errCode.includes('429') ||
         errCode.includes('rate-limit') ||
         errCode.includes('RateLimit');
 
-      // We document whether errorHandler contains the dedicated rate limit handler
-      if (!handlesRateLimitInErrorHandler) {
-        console.warn('CRITICAL FINDING: errorHandler.ts does NOT check for 429 or rate-limit errors, causing HTTP 500 on rate limit violation!');
-      }
-      // Note: We assert the current state for empirical audit
       assert.equal(
         handlesRateLimitInErrorHandler,
-        false,
-        'EMPIRICAL FINDING: errorHandler.ts currently lacks rate limit mapping, causing HTTP 500 regression on the 6th login attempt'
+        true,
+        'Rate limit error must be mapped to 429 RFC 7807'
       );
     });
   });
@@ -130,17 +124,14 @@ describe('Tier 5 Adversarial Hardening (M2): Audit Immutability, Rate Limiting &
       );
     });
 
-    it('ADV-M2.3.3 [FAILURE ANALYSIS]: Verifies unit channel authorization lacks foreign complex isolation for managers', () => {
-      // In realtimeService.ts lines 183-185:
-      // if (user.role === 'COMPLEX_MANAGER' || user.role === 'SUB_MANAGER') return true;
-      // It returns true for any unitId without checking if unit belongs to user.complexId!
+    it('ADV-M2.3.3 [ENFORCED]: Verifies unit channel authorization enforces unitBelongsToComplex for managers', () => {
       const hasManagerBypass = wsCode.includes("user.role === 'COMPLEX_MANAGER' || user.role === 'SUB_MANAGER'");
       assert.ok(hasManagerBypass, 'Manager check exists');
       const hasComplexValidationForUnit = wsCode.includes('targetUnit.complexId') || wsCode.includes('unitBelongsToComplex');
       assert.equal(
         hasComplexValidationForUnit,
-        false,
-        'EMPIRICAL FINDING: realtimeService.canSubscribe lacks cross-complex unit validation for managers'
+        true,
+        'WebSocket canSubscribe must enforce unitBelongsToComplex'
       );
     });
   });

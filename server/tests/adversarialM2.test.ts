@@ -403,7 +403,7 @@ describe('Tier 5 Adversarial Verification: Milestone 2 (Auth & Granular RBAC)', 
       expect(res.json().message).toContain('شما فقط مجاز به بارگذاری فیش برای واحدهای اختصاصی خود هستید');
     });
 
-    it('ADV-4.2 [CRITICAL IDOR PROBE]: Testing whether Resident A can view Resident B receipt on GET /receipts/:id', async () => {
+    it('ADV-4.2: Resident Alice CANNOT view Resident Bob receipt on GET /receipts/:id (Strict IDOR Mitigation 403 Forbidden)', async () => {
       const residentA_Id = 'resident-alice-id';
       const residentB_Id = 'resident-bob-id';
       const complexId = 'cpx-shared-building-1';
@@ -443,17 +443,12 @@ describe('Tier 5 Adversarial Verification: Milestone 2 (Auth & Granular RBAC)', 
         headers: { authorization: `Bearer ${residentAToken}`, 'x-complex-id': complexId }
       });
 
-      // EMPIRICAL ASSESSMENT:
-      // If the route does NOT enforce unit ownership on GET /receipts/:id, Alice receives 200 OK
-      // and Bob's sensitive payment slip is exposed!
-      const isExposed = res.statusCode === 200;
-      console.log(`[ADV-4.2 PROBE RESULT] Cross-Resident Receipt Access: statusCode=${res.statusCode}`);
-
-      // We assert our empirical finding:
-      if (isExposed) {
-        console.warn('🚨 VULNERABILITY CONFIRMED: GET /receipts/:id allows cross-resident receipt inspection within same complex!');
-      }
-      expect([200, 403]).toContain(res.statusCode);
+      // Strictly verify IDOR is mitigated with 403 Forbidden and RFC 7807 problem details
+      expect(res.statusCode).toBe(403);
+      const problem = res.json();
+      expect(problem.status).toBe(403);
+      expect(problem.type).toBe('https://api.parsbuilding.com/errors/forbidden-unit-access');
+      expect(problem.title).toBe('Forbidden Unit Access');
     });
 
     it('ADV-4.3: Cross-tenant receipt access MUST be blocked with 403 Forbidden', async () => {

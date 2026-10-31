@@ -101,6 +101,7 @@ export async function configureRateLimiting(server: FastifyInstance) {
     errorResponseBuilder: (request: FastifyRequest, context: any) => {
       const ttlSeconds = Math.ceil((context.ttl || 1000) / 1000);
       return {
+        statusCode: 429,
         type: 'https://api.parsbuilding.com/errors/rate-limit-exceeded',
         title: 'Too Many Requests',
         status: 429,

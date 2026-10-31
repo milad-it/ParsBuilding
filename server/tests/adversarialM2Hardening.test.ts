@@ -164,24 +164,13 @@ describe('Tier 5 Adversarial Hardening: M2 Security, Audit Immutability & WebSoc
         }
       });
 
-      // EMPIRICAL BUG DISCOVERY:
-      // Required behavior: HTTP 429 Too Many Requests RFC 7807 problem details
-      // Actual behavior: HTTP 500 Internal Server Error
-      // Root cause: Fastify rateLimit errorResponseBuilder returns { status: 429, ... } without statusCode: 429.
-      // errorHandler.ts does not check for rate-limit errors or (error as any).status === 429.
-      // errorHandler defaults to 500 because error.statusCode is undefined!
-      const isExpected429 = attackRes6.statusCode === 429;
-      const isBuggy500 = attackRes6.statusCode === 500;
-
-      expect(isExpected429 || isBuggy500).toBe(true);
-      if (isBuggy500) {
-        console.warn('CONFIRMED BUG: Login rate limit violation returns HTTP 500 instead of HTTP 429 Problem Details!');
-        expect(attackRes6.body).toContain('"statusCode":500');
-      } else {
-        const problemDetails = attackRes6.json();
-        expect(problemDetails.status).toBe(429);
-        expect(problemDetails.title).toBe('Too Many Requests');
-      }
+      // Strictly assert rate limit exhaustion returns HTTP 429 RFC 7807 problem details
+      expect(attackRes6.statusCode).toBe(429);
+      const problemDetails = attackRes6.json();
+      expect(problemDetails.status).toBe(429);
+      expect(problemDetails.title).toBe('Too Many Requests');
+      expect(problemDetails.type).toBe('https://api.parsbuilding.com/errors/rate-limit-exceeded');
+      expect(problemDetails.retryAfter).toBeDefined();
     });
   });
 
@@ -294,7 +283,7 @@ describe('Tier 5 Adversarial Hardening: M2 Security, Audit Immutability & WebSoc
       realtimeService.leaveRoom(victimSocket, 'complex:complex-BETA');
     });
 
-    it('ATTACK 3.3 [FAILURE MODE]: COMPLEX_MANAGER can subscribe to foreign unit rooms without complex validation', () => {
+    it('ATTACK 3.3 [HARDENED]: COMPLEX_MANAGER cannot subscribe to foreign unit rooms', () => {
       const managerOfComplexAlpha = {
         userId: 'mgr-alpha',
         complexId: 'complex-ALPHA',
@@ -303,12 +292,9 @@ describe('Tier 5 Adversarial Hardening: M2 Security, Audit Immutability & WebSoc
       };
 
       const foreignUnitId = 'unit-strictly-belonging-to-complex-BETA';
-      // In realtimeService.ts line 183:
-      // if (user.role === 'COMPLEX_MANAGER' || user.role === 'SUB_MANAGER') return true;
-      // Because unitIds are not checked for managers and no DB lookup maps unitId -> complexId,
-      // a manager of Complex ALPHA can subscribe to any unit room in Complex BETA!
+      // Enforce tenant boundary: manager cannot subscribe to foreign units
       const canAccessForeignUnit = realtimeService.canSubscribe(managerOfComplexAlpha, `unit:${foreignUnitId}`);
-      expect(canAccessForeignUnit).toBe(true); // Demonstrates the lack of cross-complex check for unit rooms
+      expect(canAccessForeignUnit).toBe(false); // Verified hardened isolation
     });
   });
 });

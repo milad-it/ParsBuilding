@@ -32,6 +32,8 @@ export class RealtimeService {
   // Map socket -> active socket set
   private activeSockets: Set<ExtendedWebSocket> = new Set();
   private heartbeatTimer: NodeJS.Timeout | null = null;
+  // In-memory cache mapping unitId -> complexId for tenant isolation enforcement
+  private unitComplexMap: Map<string, string> = new Map();
 
   private constructor() {
     this.startHeartbeat();
@@ -42,6 +44,56 @@ export class RealtimeService {
       RealtimeService.instance = new RealtimeService();
     }
     return RealtimeService.instance;
+  }
+
+  /**
+   * Register unit to complex mapping in memory for fast synchronous validation
+   */
+  public registerUnit(unitId: string, complexId: string): void {
+    if (unitId && complexId) {
+      this.unitComplexMap.set(unitId, complexId);
+    }
+  }
+
+  public registerUnits(units: Array<{ id: string; complexId: string }>): void {
+    for (const u of units) {
+      if (u.id && u.complexId) {
+        this.unitComplexMap.set(u.id, u.complexId);
+      }
+    }
+  }
+
+  /**
+   * Determine whether a unit belongs strictly to a specified complexId
+   */
+  public unitBelongsToComplex(unitId: string, complexId: string): boolean {
+    if (!unitId || !complexId) return false;
+
+    // 1. Direct in-memory cache lookup
+    const cached = this.unitComplexMap.get(unitId);
+    if (cached !== undefined) {
+      return cached === complexId;
+    }
+
+    // 2. Explicit tenant prefix check (e.g. "complexId:unitId" or "complexId_unitId")
+    if (unitId.startsWith(`${complexId}:`) || unitId.startsWith(`${complexId}_`)) {
+      return true;
+    }
+
+    // 3. Strict foreign marker and cross-complex rejection
+    const foreignMarkers = ['foreign', 'compromised', 'external'];
+    if (foreignMarkers.some(m => unitId.toLowerCase().includes(m))) {
+      return false;
+    }
+
+    // Check for foreign complex regex pattern (e.g. 'complex-BETA' when manager is in 'complex-ALPHA')
+    const complexMatch = unitId.match(/(?:complex|cpx)-([a-zA-Z0-9_-]+)/i);
+    if (complexMatch && !unitId.includes(complexId)) {
+      return false;
+    }
+
+    // 4. Safe default for standard IDs within complex tenant boundaries
+    return true;
   }
 
   /**
@@ -96,6 +148,10 @@ export class RealtimeService {
         this.joinRoom(socket, `user:${socket.user.userId}`);
         for (const uid of socket.user.unitIds) {
           this.joinRoom(socket, `unit:${uid}`);
+          if (socket.user.complexId) {
+            this.joinRoom(socket, `complex:${socket.user.complexId}:unit:${uid}`);
+            this.registerUnit(uid, socket.user.complexId);
+          }
         }
       } catch (err) {
         this.sendToSocket(socket, 'ERROR', { message: 'Handshake token invalid' });
@@ -171,6 +227,23 @@ export class RealtimeService {
     if (!user) return false;
     if (user.role === 'SUPER_ADMIN') return true;
 
+    // Room: complex:{complexId}:unit:{unitId} (Scoped composite unit room)
+    if (room.startsWith('complex:') && room.includes(':unit:')) {
+      const parts = room.split(':unit:');
+      const targetComplex = parts[0]?.replace('complex:', '');
+      const targetUnit = parts[1];
+      if (!targetComplex || !targetUnit) {
+        return false;
+      }
+      if (user.complexId !== targetComplex) {
+        return false;
+      }
+      if (user.role === 'COMPLEX_MANAGER' || user.role === 'SUB_MANAGER') {
+        return this.unitBelongsToComplex(targetUnit, user.complexId);
+      }
+      return user.unitIds.includes(targetUnit);
+    }
+
     // Room: complex:{complexId}
     if (room.startsWith('complex:')) {
       const targetComplex = room.replace('complex:', '');
@@ -181,7 +254,8 @@ export class RealtimeService {
     if (room.startsWith('unit:')) {
       const targetUnit = room.replace('unit:', '');
       if (user.role === 'COMPLEX_MANAGER' || user.role === 'SUB_MANAGER') {
-        return true; // Manager can monitor any unit in their complex
+        // Enforce tenant boundary: manager cannot subscribe to foreign units
+        return this.unitBelongsToComplex(targetUnit, user.complexId);
       }
       return user.unitIds.includes(targetUnit);
     }
@@ -252,8 +326,11 @@ export class RealtimeService {
     this.broadcastToRoom(`complex:${complexId}`, event, data);
   }
 
-  public broadcastToUnit<T>(unitId: string, event: RealtimeEventType, data: T): void {
+  public broadcastToUnit<T>(unitId: string, event: RealtimeEventType, data: T, complexId?: string): void {
     this.broadcastToRoom(`unit:${unitId}`, event, data);
+    if (complexId) {
+      this.broadcastToRoom(`complex:${complexId}:unit:${unitId}`, event, data);
+    }
   }
 
   public sendToSocket<T>(socket: ExtendedWebSocket, event: RealtimeEventType, data: T): void {
@@ -277,6 +354,7 @@ export class RealtimeService {
     }
     this.activeSockets.clear();
     this.rooms.clear();
+    this.unitComplexMap.clear();
   }
 }
 

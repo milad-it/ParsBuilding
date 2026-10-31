@@ -71,8 +71,24 @@ export function hasRequiredPermission(userRole: string, userPermissions: string[
 /**
  * Fastify preHandler guard: Authenticates request via Bearer JWT access token.
  * Populates request.user and enters tenant AsyncLocalStorage context.
+ * Fully idempotent if tenantMiddleware has already resolved the token.
  */
 export async function authenticate(request: FastifyRequest, reply: FastifyReply) {
+  // 1. If already verified by tenantMiddleware, re-affirm tenant storage and return
+  if (request.user) {
+    const activeStore = tenantStorage.getStore();
+    if (!activeStore || (!activeStore.complexId && request.user.role !== 'SUPER_ADMIN')) {
+      tenantStorage.enterWith({
+        complexId: request.user.complexId || (request.headers['x-complex-id'] as string) || '',
+        userId: request.user.id,
+        role: request.user.role,
+        permissions: request.user.permissions
+      });
+    }
+    return;
+  }
+
+  // 2. Otherwise verify Bearer token from header
   try {
     const authHeader = request.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
