@@ -1,0 +1,21 @@
+{
+  "name": "parsbuilding-tests-e2e",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Comprehensive E2E Opaque-Box Test Suite for ParsBuilding Commercial SaaS Platform",
+  "scripts": {
+    "test": "node --experimental-strip-types --test \"suites/**/*.test.ts\"",
+    "test:tier1": "node --experimental-strip-types --test \"suites/tier1_features/**/*.test.ts\"",
+    "test:tier2": "node --experimental-strip-types --test \"suites/tier2_boundaries/**/*.test.ts\"",
+    "test:tier3": "node --experimental-strip-types --test \"suites/tier3_combinations/**/*.test.ts\"",
+    "test:tier4": "node --experimental-strip-types --test \"suites/tier4_workloads/**/*.test.ts\""
+  },
+  "keywords": [
+    "e2e",
+    "testing",
+    "saas",
+    "building-management"
+  ],
+  "author": "ParsBuilding Test Team",
+  "license": "ISC"
+}
