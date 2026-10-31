@@ -43,6 +43,7 @@ export function parseDecimal(input: string | number | null | undefined): number 
   if (typeof input === 'number') return isNaN(input) ? 0 : input;
 
   const normalized = normalizeDigits(input.toString().trim())
+    .replace(/[\u200B-\u200D\uFEFF]/g, '')
     .replace(/٫/g, '.')
     .replace(/,/g, '')
     .replace(/\//g, '.');
