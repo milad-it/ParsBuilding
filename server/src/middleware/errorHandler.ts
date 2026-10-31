@@ -1,6 +1,7 @@
 import { FastifyError, FastifyReply, FastifyRequest } from 'fastify';
 import { ZodError } from 'zod';
 import { TenantIsolationError } from './tenant';
+import { AuditLogImmutableError } from '../config/database';
 
 export function errorHandler(error: FastifyError, request: FastifyRequest, reply: FastifyReply) {
   request.log.error(error);
@@ -13,6 +14,20 @@ export function errorHandler(error: FastifyError, request: FastifyRequest, reply
       .send({
         type: 'https://api.parsbuilding.com/errors/tenant-isolation-violation',
         title: 'Tenant Isolation Violation',
+        status: 403,
+        detail: error.message,
+        instance: request.raw.url || request.url
+      });
+  }
+
+  // Audit Log Immutable Error (HTTP 403 RFC 7807 Problem Details)
+  if (error instanceof AuditLogImmutableError || error.name === 'AuditLogImmutableError' || error.message?.includes('AuditLogImmutableError')) {
+    return reply
+      .code(403)
+      .header('Content-Type', 'application/problem+json')
+      .send({
+        type: 'https://api.parsbuilding.com/errors/audit-log-immutable-violation',
+        title: 'Audit Log Immutable Violation',
         status: 403,
         detail: error.message,
         instance: request.raw.url || request.url

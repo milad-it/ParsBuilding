@@ -47,8 +47,8 @@
 ## Milestones
 | # | Name | Scope | Dependencies | Status |
 |---|------|-------|-------------|--------|
-| M1 | Backend Foundation, Multi-Tenant Database & Core Computational Engine | Node.js backend setup, Prisma PostgreSQL schema, multi-tenant isolation, deterministic CalculationEngine with all 8 bug fixes, and unit calculation test suite | none | IN_PROGRESS |
-| M2 | Security Hardening, Authentication, RBAC, Audit Logging & Extensibility | Argon2id auth, JWT + refresh tokens, 4-tier RBAC, immutable audit logging, rate limiting, WebSocket & AI receipt hooks | M1 | PLANNED |
+| M1 | Backend Foundation, Multi-Tenant Database & Core Computational Engine | Node.js backend setup, Prisma PostgreSQL schema, multi-tenant isolation, deterministic CalculationEngine with all 8 bug fixes, and unit calculation test suite | none | DONE |
+| M2 | Security Hardening, Authentication, RBAC, Audit Logging & Extensibility | Argon2id auth, JWT + refresh tokens, 4-tier RBAC, immutable audit logging, rate limiting, WebSocket & AI receipt hooks | M1 | IN_PROGRESS |
 | M3 | Lossless Data Migration Engine & REST/Real-time API Contracts | Client data migration pipeline (IndexedDB/LocalStorage -> PostgreSQL) with reconciliation assertions, plus complete API endpoints | M1, M2 | PLANNED |
 | M4 | World-Class SaaS UI/UX, 3D Elements, Manager Workflows & Resident Portal | React/Vite/TS frontend, Persian RTL design system, Three.js 3D elements, manager dashboard, resident portal, real-time API integration | M3 | PLANNED |
 | M5 | Final Acceptance: 100% E2E Test Pass & Tier 5 Adversarial Coverage Hardening | Phase 1: Pass 100% of E2E test suite (Tiers 1-4). Phase 2: Adversarial coverage hardening (Tier 5) with Challengers & Forensic Auditor | M4, TEST_READY | PLANNED |

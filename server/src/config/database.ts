@@ -3,6 +3,16 @@ import { getTenantContext, TenantIsolationError } from '../middleware/tenant';
 
 export { TenantIsolationError };
 
+export class AuditLogImmutableError extends Error {
+  public readonly statusCode = 403;
+  public readonly code = 'AUDIT_LOG_IMMUTABLE_VIOLATION';
+
+  constructor(operation: string) {
+    super(`SecurityViolation: AuditLog is append-only. Operation '${operation}' is strictly forbidden.`);
+    this.name = 'AuditLogImmutableError';
+  }
+}
+
 export const rawPrisma = new PrismaClient({
   log: process.env.NODE_ENV === 'development' ? ['warn', 'error'] : ['error']
 });
@@ -50,6 +60,23 @@ function enforceTenantScope(model: string, action: string): string {
 export const prisma = rawPrisma.$extends({
   name: 'TenantIsolationExtension',
   query: {
+    auditLog: {
+      async update() {
+        throw new AuditLogImmutableError('update');
+      },
+      async updateMany() {
+        throw new AuditLogImmutableError('updateMany');
+      },
+      async delete() {
+        throw new AuditLogImmutableError('delete');
+      },
+      async deleteMany() {
+        throw new AuditLogImmutableError('deleteMany');
+      },
+      async upsert() {
+        throw new AuditLogImmutableError('upsert');
+      }
+    },
     $allModels: {
       async findMany({ model, args, query }) {
         const complexId = enforceTenantScope(model, 'findMany');

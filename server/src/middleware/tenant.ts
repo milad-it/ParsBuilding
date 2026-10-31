@@ -49,9 +49,9 @@ export function runWithTenantContext<T>(context: TenantContext, fn: () => T): T 
 export const PUBLIC_ROUTE_PATTERNS: (string | RegExp)[] = [
   '/health',
   '/api/v1/ping',
-  '/api/v1/auth/login',
-  '/api/v1/auth/register',
-  '/api/v1/auth/refresh',
+  /^\/api\/v1\/auth/,
+  '/api/v1/ws',
+  '/ws',
   '/favicon.ico'
 ];
 
@@ -82,6 +82,20 @@ export function isPublicRoute(url: string, routerPath?: string): boolean {
  */
 export async function tenantMiddleware(request: FastifyRequest, reply: FastifyReply) {
   const isPublic = isPublicRoute(request.url, request.routeOptions?.url);
+
+  // If request.user is already authenticated, use their tenant scope
+  if (request.user) {
+    const complexId = request.user.complexId || (request.headers['x-complex-id'] as string) || '';
+    const context: TenantContext = {
+      complexId,
+      userId: request.user.id,
+      role: request.user.role,
+      permissions: request.user.permissions
+    };
+    tenantStorage.enterWith(context);
+    (request as unknown as { tenantContext?: TenantContext }).tenantContext = context;
+    return;
+  }
 
   const complexIdHeader = request.headers['x-complex-id'] || request.headers['x-tenant-id'];
   const userIdHeader = request.headers['x-user-id'];

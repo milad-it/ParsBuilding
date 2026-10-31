@@ -1,14 +1,13 @@
 import Fastify from 'fastify';
-import cors from '@fastify/cors';
-import helmet from '@fastify/helmet';
-import rateLimit from '@fastify/rate-limit';
 import cookie from '@fastify/cookie';
 import websocket from '@fastify/websocket';
 import { serializerCompiler, validatorCompiler, ZodTypeProvider } from 'fastify-type-provider-zod';
 import { env } from './config/env';
+import { configureHelmet, configureCors, configureRateLimiting } from './config/security';
 import { registerRoutes } from './routes';
 import { errorHandler } from './middleware/errorHandler';
 import { tenantMiddleware } from './middleware/tenant';
+import './utils/serialization';
 
 export async function buildServer() {
   const server = Fastify({
@@ -22,20 +21,15 @@ export async function buildServer() {
   server.setSerializerCompiler(serializerCompiler);
 
   // Security middlewares
-  await server.register(helmet, { contentSecurityPolicy: false });
-  await server.register(cors, {
-    origin: env.CORS_ORIGIN.split(','),
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
-  });
+  await configureHelmet(server);
+  await configureCors(server);
+  await configureRateLimiting(server);
+
   await server.register(cookie, {
     secret: env.COOKIE_SECRET,
     hook: 'onRequest'
   });
-  await server.register(rateLimit, {
-    max: 100,
-    timeWindow: '1 minute'
-  });
+
   await server.register(websocket);
 
   // Tenant hook
@@ -47,7 +41,7 @@ export async function buildServer() {
   // API Route Registration
   await server.register(registerRoutes, { prefix: '/api/v1' });
 
-  // Healthcheck endpoint
+  // Direct root healthcheck endpoint
   server.get('/health', async () => ({ status: 'ok', timestamp: new Date().toISOString() }));
 
   return server;

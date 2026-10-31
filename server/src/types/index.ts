@@ -2,6 +2,8 @@
  * Shared Type Definitions for ParsBuilding Platform
  */
 
+export * from './auth';
+
 export interface TenantContext {
   complexId: string;
   buildingId?: string;
