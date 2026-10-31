@@ -36,4 +36,31 @@ describe('Fastify Server Bootstrap & Health Endpoint', () => {
     const body = JSON.parse(response.body);
     expect(body.message).toBe('ParsBuilding API v1 operational');
   });
+
+  it('Protected route without x-complex-id should be rejected with 400 RFC 7807 Problem Details', async () => {
+    const response = await server.inject({
+      method: 'GET',
+      url: '/api/v1/units'
+    });
+
+    expect(response.statusCode).toBe(400);
+    expect(response.headers['content-type']).toContain('application/problem+json');
+    const body = JSON.parse(response.body);
+    expect(body.type).toBe('https://api.parsbuilding.com/errors/tenant-context-missing');
+    expect(body.status).toBe(400);
+    expect(body.title).toBe('Tenant Context Missing');
+  });
+
+  it('Protected route with x-complex-id header should pass tenant middleware', async () => {
+    const response = await server.inject({
+      method: 'GET',
+      url: '/api/v1/units',
+      headers: {
+        'x-complex-id': 'complex-test-101'
+      }
+    });
+
+    // Since /api/v1/units is not registered yet, it passes tenant middleware and reaches router (404)
+    expect(response.statusCode).toBe(404);
+  });
 });

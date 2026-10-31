@@ -1,8 +1,23 @@
 import { FastifyError, FastifyReply, FastifyRequest } from 'fastify';
 import { ZodError } from 'zod';
+import { TenantIsolationError } from './tenant';
 
 export function errorHandler(error: FastifyError, request: FastifyRequest, reply: FastifyReply) {
   request.log.error(error);
+
+  // Tenant Isolation Error (HTTP 403 RFC 7807 Problem Details)
+  if (error instanceof TenantIsolationError || error.name === 'TenantIsolationError' || error.message?.includes('TenantIsolationError')) {
+    return reply
+      .code(403)
+      .header('Content-Type', 'application/problem+json')
+      .send({
+        type: 'https://api.parsbuilding.com/errors/tenant-isolation-violation',
+        title: 'Tenant Isolation Violation',
+        status: 403,
+        detail: error.message,
+        instance: request.raw.url || request.url
+      });
+  }
 
   // Zod Validation Error (HTTP 400)
   if (error instanceof ZodError) {
