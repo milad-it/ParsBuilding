@@ -465,10 +465,11 @@ export async function periodRoutes(fastify: FastifyInstance) {
         const paidAmount = Number(charge.paidAmount);
         totalCollected += paidAmount;
 
-        const unpaid = chargeAmount - paidAmount;
-
-        // If unpaid balance remains, record CHARGE_TRANSFER ledger transaction and update unit balance
-        if (unpaid > 0) {
+        // Transfer full period charge to general ledger
+        // Because payments made during active period lifecycle already incremented unit.currentBalance,
+        // debiting the full chargeAmount (C) guarantees:
+        // finalBalance = previousBalance + P - C = -unpaid (zero double-crediting)
+        if (chargeAmount > 0) {
           await tx.ledgerTransaction.create({
             data: {
               complexId: period.complexId,
@@ -478,18 +479,18 @@ export async function periodRoutes(fastify: FastifyInstance) {
               transactionId: `tx-tf-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
               txKind: TxKind.CHARGE_TRANSFER,
               type: TxType.DEBT,
-              amount: unpaid,
+              amount: chargeAmount,
               date: new Date(),
-              description: `انتقال مانده تسویه‌نشده دوره ${period.name}`,
+              description: `انتقال شارژ دوره ${period.name}`,
               createdById: user.id
             }
           });
 
-          // Decrement balance (resident debt increases)
+          // Debit unit balance by the full period charge
           await tx.unit.update({
             where: { id: charge.unitId },
             data: {
-              currentBalance: { decrement: unpaid }
+              currentBalance: { decrement: chargeAmount }
             }
           });
         }

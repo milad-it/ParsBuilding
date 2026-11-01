@@ -150,21 +150,94 @@ describe('MigrationService: Lossless Data Migration & Reconciliation Engine', ()
           const record = { id: `prd-${Date.now()}-${Math.random()}`, ...data };
           inMemoryDb.periods.set(record.id, record);
           return record;
-        })
+        }),
+        upsert: vi.fn(async ({ where, create, update }) => {
+          const { complexId, type, year, month } = where.complexId_type_year_month;
+          let existing = null;
+          for (const p of inMemoryDb.periods.values()) {
+            if (p.complexId === complexId && p.type === type && p.year === year && p.month === month) {
+              existing = p;
+              break;
+            }
+          }
+          if (existing) {
+            const updated = { ...existing, ...update };
+            inMemoryDb.periods.set(existing.id, updated);
+            return updated;
+          }
+          const record = { id: `prd-${Date.now()}-${Math.random()}`, ...create };
+          inMemoryDb.periods.set(record.id, record);
+          return record;
+        }),
+        deleteMany: vi.fn(async ({ where }) => {
+          for (const [id, p] of inMemoryDb.periods.entries()) {
+            if (!where?.complexId || p.complexId === where.complexId) {
+              inMemoryDb.periods.delete(id);
+            }
+          }
+        }),
+        findMany: vi.fn(async () => Array.from(inMemoryDb.periods.values()))
       },
       unitCharge: {
         create: vi.fn(async ({ data }) => {
           const record = { id: `chg-${Date.now()}-${Math.random()}`, ...data };
           inMemoryDb.unitCharges.set(record.id, record);
           return record;
-        })
+        }),
+        upsert: vi.fn(async ({ where, create, update }) => {
+          const { periodId, unitId } = where.periodId_unitId;
+          let existing = null;
+          for (const ch of inMemoryDb.unitCharges.values()) {
+            if (ch.periodId === periodId && ch.unitId === unitId) {
+              existing = ch;
+              break;
+            }
+          }
+          if (existing) {
+            const updated = { ...existing, ...update };
+            inMemoryDb.unitCharges.set(existing.id, updated);
+            return updated;
+          }
+          const record = { id: `chg-${Date.now()}-${Math.random()}`, ...create };
+          inMemoryDb.unitCharges.set(record.id, record);
+          return record;
+        }),
+        findMany: vi.fn(async () => Array.from(inMemoryDb.unitCharges.values()))
       },
       ledgerTransaction: {
         create: vi.fn(async ({ data }) => {
           const record = { id: `tx-${Date.now()}-${Math.random()}`, ...data };
           inMemoryDb.transactions.set(record.id, record);
           return record;
-        })
+        }),
+        upsert: vi.fn(async ({ where, create, update }) => {
+          const { transactionId } = where;
+          let existing = null;
+          for (const tx of inMemoryDb.transactions.values()) {
+            if (tx.transactionId === transactionId) {
+              existing = tx;
+              break;
+            }
+          }
+          if (existing) {
+            const updated = { ...existing, ...update };
+            inMemoryDb.transactions.set(existing.id, updated);
+            return updated;
+          }
+          const record = { id: `tx-${Date.now()}-${Math.random()}`, ...create };
+          inMemoryDb.transactions.set(record.id, record);
+          return record;
+        }),
+        deleteMany: vi.fn(async ({ where }) => {
+          for (const [id, tx] of inMemoryDb.transactions.entries()) {
+            if (!where?.complexId || tx.complexId === where.complexId) {
+              if (!where?.transactionId?.startsWith || tx.transactionId.startsWith(where.transactionId.startsWith)) {
+                inMemoryDb.transactions.delete(id);
+              }
+            }
+          }
+        }),
+        findMany: vi.fn(async () => Array.from(inMemoryDb.transactions.values()))
       },
       auditLog: {
         create: vi.fn(async ({ data }) => {

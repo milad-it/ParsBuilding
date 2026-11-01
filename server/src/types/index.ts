@@ -25,9 +25,14 @@ export interface AuditLogEntry {
 }
 
 export interface LegacyExportPayload {
+  complexId?: string;
+  complexName?: string;
+  initialFund: number;
+  expectedEndingFund?: number;
+  expectedTotalDebts?: number;
+  overwrite?: boolean;
   units: any[];
   periods: any[];
-  initialFund: number;
 }
 
 export interface MigrationReconciliation {

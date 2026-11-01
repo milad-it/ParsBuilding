@@ -1157,28 +1157,25 @@ describe('Tier 5 Adversarial Verification: M3 REST Domain Security & RBAC', () =
       const expectedUnpaid101 = unit101TotalCharge - partialPayAmount;
       const finalBal101 = db.units.get(unitA101Id).currentBalance;
 
-      // FORENSIC AUDIT DISCOVERY:
+      // FINANCIAL CONTINUITY AUDIT VERIFICATION:
       // Mathematical conservation requires:
       // finalBalance = initialBalance + partialPayment - totalCharge = 0 + partialPayAmount - unit101TotalCharge = -expectedUnpaid101 (-512,727 Rials).
-      // However, the current implementation increments unit.currentBalance upon payment (+partialPayAmount)
-      // AND decrements unit.currentBalance upon period close only by unpaid (-expectedUnpaid101):
-      // finalBalance = partialPayAmount - (unit101TotalCharge - partialPayAmount) = 2*partialPayAmount - unit101TotalCharge = -170,909 Rials.
-      // This causes an exact double-crediting of partialPayAmount (+341,818 Rials) where resident debt is under-reported!
+      expect(finalBal101).toBe(-expectedUnpaid101);
       const doubleCreditingDelta = finalBal101 - (-expectedUnpaid101);
-      expect(doubleCreditingDelta).toBe(partialPayAmount);
+      expect(doubleCreditingDelta).toBe(0);
 
-      // For units that paid 0 (e.g. Unit 102), net balance is exactly -totalCharge (no double-crediting when paid = 0)
+      // For units that paid 0 (e.g. Unit 102), net balance is exactly -totalCharge
       const charge102 = charges.find(c => c.unitId === unitA102Id);
       const expectedDebt102 = Number(charge102.amount);
       expect(db.units.get(unitA102Id).currentBalance).toBe(-expectedDebt102);
 
       // Check ledger transactions for kind CHARGE_TRANSFER
       const transfers = Array.from(db.transactions.values()).filter(t => t.txKind === 'CHARGE_TRANSFER');
-      expect(transfers.length).toBe(4); // All 4 units had unpaid balances
+      expect(transfers.length).toBe(4); // All 4 units billed
 
       const transfer101 = transfers.find(t => t.unitId === unitA101Id);
       expect(transfer101).toBeDefined();
-      expect(Number(transfer101.amount)).toBe(expectedUnpaid101);
+      expect(Number(transfer101.amount)).toBe(unit101TotalCharge);
       expect(transfer101.type).toBe('DEBT');
 
       // Step 5: Verify double-closing is strictly blocked (HTTP 400)

@@ -216,11 +216,54 @@ describe('Adversarial Verification: Milestone 3 Data Migration & Financial Recon
           db.periods.set(record.id, record);
           return record;
         }),
+        upsert: vi.fn(async ({ where, create, update }) => {
+          const { complexId, type, year, month } = where.complexId_type_year_month;
+          let existing = null;
+          for (const p of db.periods.values()) {
+            if (p.complexId === complexId && p.type === type && p.year === year && p.month === month) {
+              existing = p;
+              break;
+            }
+          }
+          if (existing) {
+            const updated = { ...existing, ...update };
+            db.periods.set(existing.id, updated);
+            return updated;
+          }
+          const record = { id: `prd-${Date.now()}-${Math.random()}`, ...create };
+          db.periods.set(record.id, record);
+          return record;
+        }),
+        deleteMany: vi.fn(async ({ where }) => {
+          for (const [id, p] of db.periods.entries()) {
+            if (!where?.complexId || p.complexId === where.complexId) {
+              db.periods.delete(id);
+            }
+          }
+        }),
         findMany: vi.fn(async () => Array.from(db.periods.values()))
       },
       unitCharge: {
         create: vi.fn(async ({ data }) => {
           const record = { id: `chg-${Date.now()}-${Math.random()}`, ...data };
+          db.unitCharges.set(record.id, record);
+          return record;
+        }),
+        upsert: vi.fn(async ({ where, create, update }) => {
+          const { periodId, unitId } = where.periodId_unitId;
+          let existing = null;
+          for (const ch of db.unitCharges.values()) {
+            if (ch.periodId === periodId && ch.unitId === unitId) {
+              existing = ch;
+              break;
+            }
+          }
+          if (existing) {
+            const updated = { ...existing, ...update };
+            db.unitCharges.set(existing.id, updated);
+            return updated;
+          }
+          const record = { id: `chg-${Date.now()}-${Math.random()}`, ...create };
           db.unitCharges.set(record.id, record);
           return record;
         }),
@@ -231,6 +274,33 @@ describe('Adversarial Verification: Milestone 3 Data Migration & Financial Recon
           const record = { id: `tx-${Date.now()}-${Math.random()}`, ...data };
           db.transactions.set(record.id, record);
           return record;
+        }),
+        upsert: vi.fn(async ({ where, create, update }) => {
+          const { transactionId } = where;
+          let existing = null;
+          for (const tx of db.transactions.values()) {
+            if (tx.transactionId === transactionId) {
+              existing = tx;
+              break;
+            }
+          }
+          if (existing) {
+            const updated = { ...existing, ...update };
+            db.transactions.set(existing.id, updated);
+            return updated;
+          }
+          const record = { id: `tx-${Date.now()}-${Math.random()}`, ...create };
+          db.transactions.set(record.id, record);
+          return record;
+        }),
+        deleteMany: vi.fn(async ({ where }) => {
+          for (const [id, tx] of db.transactions.entries()) {
+            if (!where?.complexId || tx.complexId === where.complexId) {
+              if (!where?.transactionId?.startsWith || tx.transactionId.startsWith(where.transactionId.startsWith)) {
+                db.transactions.delete(id);
+              }
+            }
+          }
         }),
         findMany: vi.fn(async () => Array.from(db.transactions.values()))
       },
@@ -421,7 +491,7 @@ describe('Adversarial Verification: Milestone 3 Data Migration & Financial Recon
       expect(negativeSum).toBe(1_000_000);
     });
 
-    it('ADV-2.2: Duplicate Unit Number Overwrite & Debt Leakage Analysis', async () => {
+    it('ADV-2.2: Duplicate Unit Number Ingestion MUST throw MigrationReconciliationError with Clean Rollback', async () => {
       const complexId = 'adv-dup-unit-cpx';
       const payload = {
         initialFund: 0,
@@ -432,49 +502,72 @@ describe('Adversarial Verification: Milestone 3 Data Migration & Financial Recon
         periods: []
       };
 
-      // Both units have the same unitNumber (10)
-      const result = await migrationService.executeMigration(complexId, payload as any);
+      // Duplicate unit 10 must be strictly rejected
+      await expect(
+        migrationService.executeMigration(complexId, payload as any)
+      ).rejects.toThrow(MigrationReconciliationError);
 
+      // Clean rollback: Zero orphan units committed to DB
       const dbUnits = Array.from(db.units.values()).filter(u => u.complexId === complexId);
-      // Because Unit has @@unique([complexId, unitNumber]), the second unit overwrote the first in DB
-      expect(dbUnits.length).toBe(1);
-      expect(dbUnits[0]?.area).toBe(85);
-      expect(dbUnits[0]?.currentBalance).toBe(-200_000);
-
-      // CRITICAL FINDING: migrationService counted 2 units and summed 400K + 200K = 600K
-      // Both legacyDebtsSum and migratedDebtsSum equal 600K in-memory:
-      expect(result.unitsImported).toBe(2);
-      expect(result.debtDiscrepancy).toBe(0);
-
-      // But in the actual DB, the total resident debt is ONLY 200_000!
-      // 400,000 Rials of debt vanished from the DB while migration reported 0 discrepancy!
-      const actualDbDebts = dbUnits
-        .filter(u => u.currentBalance < 0)
-        .reduce((sum, u) => sum + Math.abs(u.currentBalance), 0);
-      expect(actualDbDebts).toBe(200_000);
-      expect(actualDbDebts).not.toBe(600_000);
+      expect(dbUnits.length).toBe(0);
     });
 
-    it('ADV-2.3: Empirical Proof: migrationService cannot detect resident debt discrepancies from payload', async () => {
+    it('ADV-2.3: Resident debts reconciliation against expectedTotalDebts MUST detect discrepancies', async () => {
       const complexId = 'adv-tampered-debts-cpx';
-      // Manager knows from legacy books that total debts should be 5,000,000 Rials
-      // But units only have 3,000,000 Rials in debt (2,000,000 Rials missing/tampered)
       const payloadWithExpectedDebts = {
         initialFund: 0,
-        expectedTotalDebts: 5_000_000,
+        expectedTotalDebts: 5_000_000, // Ledger expects 5,000,000 Rials debt
         units: [
           { vahed: 1, metraj: 100, balance: -1_000_000 },
           { vahed: 2, metraj: 100, balance: -2_000_000 }
+          // Actual units only sum to 3,000,000 Rials (2,000,000 Rials missing)
         ],
         periods: []
       };
 
-      // In current implementation, migrationService ignores expectedTotalDebts completely:
-      // Both legacyDebtsSum and migratedDebtsSum are computed from Math.abs(balance) in the same loop.
-      // So debtDiscrepancy is always 0 and it succeeds without detecting the 2M missing debt!
-      const result = await migrationService.executeMigration(complexId, payloadWithExpectedDebts as any);
-      expect(result.success).toBe(true);
-      expect(result.debtDiscrepancy).toBe(0); // Tautology: always 0!
+      // Must reject with discrepancy = 2,000,000 Rials
+      await expect(
+        migrationService.executeMigration(complexId, payloadWithExpectedDebts as any)
+      ).rejects.toThrow(/Resident debts reconciliation failed: ΔDebts = 2000000 Rials/i);
+
+      // Clean rollback: Zero records committed
+      const dbUnits = Array.from(db.units.values()).filter(u => u.complexId === complexId);
+      expect(dbUnits.length).toBe(0);
+    });
+
+    it('ADV-2.4: Re-running migration for same complex is completely idempotent and does not duplicate periods or transactions', async () => {
+      const complexId = 'adv-idempotent-cpx';
+      const payload = {
+        initialFund: 5_000_000,
+        expectedEndingFund: 7_000_000,
+        units: [{ vahed: 1, metraj: 100, balance: -500_000 }],
+        periods: [
+          {
+            title: 'دوره اول',
+            year: 1403,
+            month: '01',
+            totalExpenses: 1_000_000,
+            payments: [{ amount: 3_000_000 }]
+          }
+        ]
+      };
+
+      // First execution
+      const res1 = await migrationService.executeMigration(complexId, payload as any);
+      expect(res1.success).toBe(true);
+
+      // Second execution (same payload)
+      const res2 = await migrationService.executeMigration(complexId, payload as any);
+      expect(res2.success).toBe(true);
+
+      // Check DB counts: Exactly 1 period, 1 unit, 1 resident, 1 payment transaction
+      const periods = Array.from(db.periods.values()).filter(p => p.complexId === complexId);
+      const units = Array.from(db.units.values()).filter(u => u.complexId === complexId);
+      const txs = Array.from(db.transactions.values()).filter(t => t.complexId === complexId);
+
+      expect(periods.length).toBe(1);
+      expect(units.length).toBe(1);
+      expect(txs.length).toBe(1);
     });
   });
 
@@ -738,6 +831,27 @@ describe('Adversarial Verification: Milestone 3 Data Migration & Financial Recon
       const problem = res.json();
       expect(problem.type).toBe('https://api.parsbuilding.com/errors/missing-complex-id');
       expect(problem.status).toBe(400);
+    });
+
+    it('ADV-5.4: Manager of Complex A cannot migrate into Complex B (HTTP 403 Forbidden)', async () => {
+      const res = await server.inject({
+        method: 'POST',
+        url: '/api/v1/complexes/cpx-different-tenant/migrate',
+        headers: {
+          authorization: `Bearer ${managerToken}`, // managerToken.complexId === 'cpx-adv-test'
+          'x-complex-id': 'cpx-adv-test'
+        },
+        payload: {
+          initialFund: 0,
+          units: [{ vahed: 1, metraj: 80 }],
+          periods: []
+        }
+      });
+
+      expect(res.statusCode).toBe(403);
+      expect(res.headers['content-type']).toMatch(/application\/problem\+json/);
+      expect(res.json().type).toBe('https://api.parsbuilding.com/errors/forbidden');
+      expect(res.json().detail).toMatch(/Cross-tenant migration forbidden/i);
     });
   });
 });

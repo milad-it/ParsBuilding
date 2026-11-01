@@ -134,7 +134,9 @@ describe('Fastify Domain REST APIs Integration', () => {
     });
     vi.spyOn(rawPrisma.building, 'findFirst').mockImplementation(async () => Array.from(db.buildings.values())[0] || null);
 
-    vi.spyOn(rawPrisma.unit, 'findMany').mockImplementation(async () => Array.from(db.units.values()));
+    vi.spyOn(rawPrisma.unit, 'findMany').mockImplementation(async ({ where }: any = {}) => {
+      return Array.from(db.units.values()).filter(u => !where?.complexId || u.complexId === where.complexId);
+    });
     vi.spyOn(rawPrisma.unit, 'findUnique').mockImplementation(async ({ where }: any) => {
       if (where.id) return db.units.get(where.id) || null;
       if (where.complexId_unitNumber) {
@@ -231,6 +233,27 @@ describe('Fastify Domain REST APIs Integration', () => {
       db.periods.set(rec.id, rec);
       return rec;
     });
+    vi.spyOn(rawPrisma.period, 'upsert').mockImplementation(async ({ where, create, update }: any) => {
+      const { complexId, type, year, month } = where.complexId_type_year_month;
+      for (const p of db.periods.values()) {
+        if (p.complexId === complexId && p.type === type && p.year === year && p.month === month) {
+          const upd = { ...p, ...update };
+          db.periods.set(p.id, upd);
+          return upd;
+        }
+      }
+      const rec = { id: `prd-${Date.now()}`, ...create };
+      db.periods.set(rec.id, rec);
+      return rec;
+    });
+    vi.spyOn(rawPrisma.period, 'deleteMany').mockImplementation(async ({ where }: any = {}) => {
+      for (const [id, p] of db.periods.entries()) {
+        if (!where?.complexId || p.complexId === where.complexId) {
+          db.periods.delete(id);
+        }
+      }
+      return { count: 0 };
+    });
     vi.spyOn(rawPrisma.period, 'update').mockImplementation(async ({ where, data }: any) => {
       const ex = db.periods.get(where.id) || {};
       const updated = { ...ex, ...data };
@@ -244,6 +267,19 @@ describe('Fastify Domain REST APIs Integration', () => {
       db.unitCharges.set(rec.id, rec);
       return rec;
     });
+    vi.spyOn(rawPrisma.unitCharge, 'upsert').mockImplementation(async ({ where, create, update }: any) => {
+      const { periodId, unitId } = where.periodId_unitId;
+      for (const ch of db.unitCharges.values()) {
+        if (ch.periodId === periodId && ch.unitId === unitId) {
+          const upd = { ...ch, ...update };
+          db.unitCharges.set(ch.id, upd);
+          return upd;
+        }
+      }
+      const rec = { id: `chg-${Date.now()}`, ...create };
+      db.unitCharges.set(rec.id, rec);
+      return rec;
+    });
     vi.spyOn(rawPrisma.unitCharge, 'deleteMany').mockImplementation(async () => ({ count: 0 }));
 
     vi.spyOn(rawPrisma.ledgerTransaction, 'findMany').mockImplementation(async () => Array.from(db.transactions.values()));
@@ -252,6 +288,29 @@ describe('Fastify Domain REST APIs Integration', () => {
       const rec = { id: `tx-${Date.now()}`, ...data };
       db.transactions.set(rec.id, rec);
       return rec;
+    });
+    vi.spyOn(rawPrisma.ledgerTransaction, 'upsert').mockImplementation(async ({ where, create, update }: any) => {
+      const { transactionId } = where;
+      for (const tx of db.transactions.values()) {
+        if (tx.transactionId === transactionId) {
+          const upd = { ...tx, ...update };
+          db.transactions.set(tx.id, upd);
+          return upd;
+        }
+      }
+      const rec = { id: `tx-${Date.now()}`, ...create };
+      db.transactions.set(rec.id, rec);
+      return rec;
+    });
+    vi.spyOn(rawPrisma.ledgerTransaction, 'deleteMany').mockImplementation(async ({ where }: any = {}) => {
+      for (const [id, tx] of db.transactions.entries()) {
+        if (!where?.complexId || tx.complexId === where.complexId) {
+          if (!where?.transactionId?.startsWith || tx.transactionId.startsWith(where.transactionId.startsWith)) {
+            db.transactions.delete(id);
+          }
+        }
+      }
+      return { count: 0 };
     });
 
     vi.spyOn(rawPrisma.chatMessage, 'findMany').mockImplementation(async () => Array.from(db.chatMessages.values()));

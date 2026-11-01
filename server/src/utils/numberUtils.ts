@@ -15,6 +15,8 @@
 export function toEnDigit(str: string | number | null | undefined): string {
   if (str == null) return '';
   return String(str)
+    // Strip invisible formatting characters: LTR/RTL marks, ZWNJ, ZWJ, zero-width space, BOM
+    .replace(/[\u200E\u200F\u200B\u200C\u200D\uFEFF]/g, '')
     // Persian digits: ۰ (1776) to ۹ (1785)
     .replace(/[\u06F0-\u06F9]/g, d => String(d.charCodeAt(0) - 1776))
     // Arabic digits: ٠ (1632) to ٩ (1641)
@@ -23,20 +25,34 @@ export function toEnDigit(str: string | number | null | undefined): string {
 
 /**
  * Parses floating-point numbers preserving decimal parts for unit area and fractional rates.
- * Fixes Bug #2 by converting Persian/Arabic decimal separators (٫, /) to standard period (.)
- * and stripping out thousand separators while preserving the decimal fraction.
+ * Correctly distinguishes thousands separators from decimal points:
+ * - Multi-dot / multi-slash formats (e.g. '28.000.000', '28/000/000') are treated as thousands separators.
+ * - Arabic decimal separator Momayyez ('٫') and single slash ('/') are converted to standard period ('.').
  */
 export function parseDecimal(val: string | number | null | undefined): number {
   if (val == null) return 0;
   if (typeof val === 'number') return isNaN(val) ? 0 : val;
 
   let s = toEnDigit(val).trim();
-  // Standardize common Persian/Arabic decimal separators:
-  // \u066B is the Arabic decimal separator '٫'
-  // '/' is also frequently used in Persian accounting as decimal mark
+
+  // Strip standard and Arabic thousands separators:
+  // \u066C = Arabic thousands separator '٬'
+  // \u060C = Arabic comma '،'
+  // ',' = standard comma
+  s = s.replace(/[\u066C\u060C,]/g, '');
+
+  // If multiple dots or multiple slashes exist, they are thousands separators:
+  const dotCount = (s.match(/\./g) || []).length;
+  const slashCount = (s.match(/\//g) || []).length;
+  if (dotCount > 1) s = s.replace(/\./g, '');
+  if (slashCount > 1) s = s.replace(/\//g, '');
+
+  // Standardize remaining decimal separator:
+  // \u066B = Arabic decimal separator '٫'
+  // '/' = common Persian accounting decimal separator
   s = s.replace(/[\u066B/]/g, '.');
 
-  // Remove commas (thousand separators) and any other character except digits, period, minus
+  // Strip any remaining characters except digits, period, and minus sign
   s = s.replace(/[^0-9.-]/g, '');
 
   const parsed = parseFloat(s);

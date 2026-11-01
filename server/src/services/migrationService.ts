@@ -102,14 +102,28 @@ export class MigrationService {
         });
       }
 
+      if ((payload as any).overwrite) {
+        // Clean up previously migrated periods and associated charges for this complex
+        await tx.period.deleteMany({
+          where: { complexId }
+        });
+        // Clean up previously migrated transactions for this complex
+        await tx.ledgerTransaction.deleteMany({
+          where: {
+            complexId,
+            transactionId: { startsWith: 'tx-mig-' }
+          }
+        });
+      }
+
       let unitsImported = 0;
       let periodsImported = 0;
       let transactionsImported = 0;
       let totalPayments = 0;
       let totalExpenses = 0;
       let legacyDebtsSum = 0;
-      let migratedDebtsSum = 0;
 
+      const seenUnitNumbers = new Set<number>();
       const unitIdMap = new Map<string | number, string>();
       const unitsList = Array.isArray(payload.units) ? payload.units : [];
 
@@ -118,6 +132,21 @@ export class MigrationService {
         const u = unitsList[i]!;
         const rawUnitNumber = u.unitNumber ?? u.vahed ?? u.id ?? (i + 1);
         const unitNumber = parseInt(toEnDigit(rawUnitNumber), 10);
+
+        if (isNaN(unitNumber)) {
+          throw new MigrationReconciliationError(
+            `Invalid unit number at index ${i}: "${rawUnitNumber}". Must be a valid numeric value.`
+          );
+        }
+
+        // Tier 1 Defense: Strict Duplicate Unit Rejection
+        if (seenUnitNumbers.has(unitNumber)) {
+          throw new MigrationReconciliationError(
+            `Duplicate unit number ${unitNumber} detected in migration payload. Unit numbers must be unique within a complex.`
+          );
+        }
+        seenUnitNumbers.add(unitNumber);
+
         const area = parseDecimal(u.area ?? u.metraj ?? 100);
 
         // Normalize occupants count
@@ -134,10 +163,9 @@ export class MigrationService {
         const hasPackage = u.hasPackage ?? true;
         const ownerName = String(u.ownerName || u.name || `واحد ${unitNumber}`).trim();
 
-        // Safe unique phone per unit if empty
-        const phone = String(
-          u.ownerPhone || u.phone || `0900${String(unitNumber).padStart(7, '0')}`
-        ).trim();
+        // Safe unique phone per unit: trim whitespace-only phones before fallback
+        const rawPhone = String(u.ownerPhone ?? u.phone ?? '').trim();
+        const phone = rawPhone || `0900${String(unitNumber).padStart(7, '0')}`;
 
         if (balance < 0) {
           legacyDebtsSum += Math.abs(balance);
@@ -221,9 +249,6 @@ export class MigrationService {
           }
         });
 
-        if (balance < 0) {
-          migratedDebtsSum += Math.abs(balance);
-        }
         unitsImported++;
 
         // Audit log for Unit creation
@@ -241,7 +266,8 @@ export class MigrationService {
 
         // Import unit legacy transactions if present
         if (Array.isArray(u.transactions)) {
-          for (const t of u.transactions) {
+          for (let tIdx = 0; tIdx < u.transactions.length; tIdx++) {
+            const t = u.transactions[tIdx]!;
             const txAmt = parseDecimal(t.amount || 0);
             const isPayment = (t.type || '').toLowerCase() === 'payment';
             if (isPayment) {
@@ -258,17 +284,28 @@ export class MigrationService {
               ? TxType.DEBT
               : (rawType === 'FORGIVE' ? TxType.FORGIVE : TxType.PAYMENT);
 
-            await tx.ledgerTransaction.create({
-              data: {
+            // Deterministic transactionId prevents duplicate rows on re-migration
+            const txId = t.transactionId || `tx-mig-${complexId}-${unitNumber}-${tIdx}`;
+
+            await tx.ledgerTransaction.upsert({
+              where: { transactionId: txId },
+              create: {
                 complexId,
                 unitId: createdUnit.id,
-                transactionId: t.transactionId || `tx-leg-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`,
+                transactionId: txId,
                 txKind,
                 type: txType,
                 amount: txAmt,
                 date: t.date ? new Date(t.date) : new Date(),
                 description: t.desc || t.description || 'تراکنش قدیمی کلاینت',
                 paymentMethod: PaymentMethod.CARD_TRANSFER,
+              },
+              update: {
+                amount: txAmt,
+                txKind,
+                type: txType,
+                date: t.date ? new Date(t.date) : new Date(),
+                description: t.desc || t.description || 'تراکنش قدیمی کلاینت',
               }
             });
             transactionsImported++;
@@ -297,8 +334,16 @@ export class MigrationService {
         // Ensure unique [complexId, type, year, month]
         const uniqueMonth = `${month}_mig_${pIdx + 1}`;
 
-        const createdPeriod = await tx.period.create({
-          data: {
+        const createdPeriod = await tx.period.upsert({
+          where: {
+            complexId_type_year_month: {
+              complexId,
+              type: periodType,
+              year,
+              month: uniqueMonth,
+            }
+          },
+          create: {
             complexId,
             type: periodType,
             name: p.title || p.name || `دوره ${pIdx + 1}`,
@@ -307,13 +352,20 @@ export class MigrationService {
             month: uniqueMonth,
             totalExpenseAmount: periodExpense,
             frozenExpenses: p.frozenExpenses || p.expenses || null,
+          },
+          update: {
+            name: p.title || p.name || `دوره ${pIdx + 1}`,
+            status: periodStatus,
+            totalExpenseAmount: periodExpense,
+            frozenExpenses: p.frozenExpenses || p.expenses || null,
           }
         });
         periodsImported++;
 
         // Import period payments
         if (Array.isArray(p.payments)) {
-          for (const pay of p.payments) {
+          for (let payIdx = 0; payIdx < p.payments.length; payIdx++) {
+            const pay = p.payments[payIdx]!;
             const payAmt = parseDecimal(pay.amount || 0);
             totalPayments += payAmt;
 
@@ -322,18 +374,26 @@ export class MigrationService {
               : Array.from(unitIdMap.values())[0];
 
             if (targetUnitId) {
-              await tx.ledgerTransaction.create({
-                data: {
+              const payTxId = pay.transactionId || `tx-mig-pay-${complexId}-${uniqueMonth}-${payIdx}`;
+
+              await tx.ledgerTransaction.upsert({
+                where: { transactionId: payTxId },
+                create: {
                   complexId,
                   unitId: targetUnitId,
                   periodId: createdPeriod.id,
-                  transactionId: pay.transactionId || `tx-pay-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`,
+                  transactionId: payTxId,
                   txKind: TxKind.MANUAL,
                   type: TxType.PAYMENT,
                   amount: payAmt,
                   date: pay.date ? new Date(pay.date) : new Date(),
                   description: pay.desc || pay.description || `پرداخت شارژ دوره ${createdPeriod.name}`,
                   paymentMethod: PaymentMethod.CARD_TRANSFER,
+                },
+                update: {
+                  amount: payAmt,
+                  date: pay.date ? new Date(pay.date) : new Date(),
+                  description: pay.desc || pay.description || `پرداخت شارژ دوره ${createdPeriod.name}`,
                 }
               });
               transactionsImported++;
@@ -351,11 +411,29 @@ export class MigrationService {
             if (targetUnitId) {
               const chAmt = parseDecimal(ch.amount || 0);
               const paidAmt = parseDecimal(ch.paidAmount || 0);
-              await tx.unitCharge.create({
-                data: {
+              await tx.unitCharge.upsert({
+                where: {
+                  periodId_unitId: {
+                    periodId: createdPeriod.id,
+                    unitId: targetUnitId,
+                  }
+                },
+                create: {
                   complexId,
                   periodId: createdPeriod.id,
                   unitId: targetUnitId,
+                  amount: chAmt,
+                  paidAmount: paidAmt,
+                  fixedShare: parseDecimal(ch.details?.fixed || 0),
+                  waterShare: parseDecimal(ch.details?.water || 0),
+                  gasShare: parseDecimal(ch.details?.gas || 0),
+                  electricityShare: parseDecimal(ch.details?.elec || 0),
+                  incidentalShare: parseDecimal(ch.details?.incidental || 0),
+                  specialShare: parseDecimal(ch.details?.specialShare || 0),
+                  snapshotOccupants: ch.snapshot?.occupants || 0,
+                  snapshotHasPackage: !!ch.snapshot?.hasPackage,
+                },
+                update: {
                   amount: chAmt,
                   paidAmount: paidAmt,
                   fixedShare: parseDecimal(ch.details?.fixed || 0),
@@ -375,12 +453,11 @@ export class MigrationService {
 
       // 5. Mathematical Reconciliation Verification
       const calculatedEndingFund = initialFund + totalPayments - totalExpenses;
-      const expectedFund = (payload as any).expectedEndingFund !== undefined
-        ? parseDecimal((payload as any).expectedEndingFund)
+      const expectedFund = payload.expectedEndingFund !== undefined
+        ? parseDecimal(payload.expectedEndingFund)
         : calculatedEndingFund;
 
       const fundDiscrepancy = Math.abs(calculatedEndingFund - expectedFund);
-      const debtDiscrepancy = Math.abs(migratedDebtsSum - legacyDebtsSum);
 
       if (fundDiscrepancy !== 0) {
         throw new MigrationReconciliationError(
@@ -388,9 +465,35 @@ export class MigrationService {
         );
       }
 
+      // Authentic PostgreSQL Resident Debts Reconciliation
+      // Direct transactional query of persisted database state
+      const persistedUnits = await tx.unit.findMany({
+        where: { complexId },
+        select: { id: true, unitNumber: true, currentBalance: true }
+      });
+
+      // Guard against dropped or duplicated unit rows in database
+      if (persistedUnits.length !== unitsList.length) {
+        throw new MigrationReconciliationError(
+          `Unit count mismatch: ${unitsList.length} units submitted, but ${persistedUnits.length} persisted in database.`
+        );
+      }
+
+      // Sum authentic negative balances directly from PostgreSQL
+      const actualPgDebts = persistedUnits
+        .filter(u => Number(u.currentBalance) < 0)
+        .reduce((sum, u) => sum + Math.abs(Number(u.currentBalance)), 0);
+
+      // Use expectedTotalDebts if provided, otherwise legacyDebtsSum
+      const expectedDebts = payload.expectedTotalDebts !== undefined
+        ? parseDecimal(payload.expectedTotalDebts)
+        : legacyDebtsSum;
+
+      const debtDiscrepancy = Math.round(Math.abs(actualPgDebts - expectedDebts));
+
       if (debtDiscrepancy !== 0) {
         throw new MigrationReconciliationError(
-          `Resident debts reconciliation failed: ΔDebts = ${debtDiscrepancy} Rials. Expected legacy debt ${legacyDebtsSum}, calculated ${migratedDebtsSum}.`
+          `Resident debts reconciliation failed: ΔDebts = ${debtDiscrepancy} Rials. Expected debts ${expectedDebts}, calculated ${actualPgDebts}.`
         );
       }
 

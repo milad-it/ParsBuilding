@@ -13,6 +13,8 @@ const migrationBodySchema = z.object({
   complexName: z.string().optional(),
   initialFund: z.number().default(0),
   expectedEndingFund: z.number().optional(),
+  expectedTotalDebts: z.number().optional(),
+  overwrite: z.boolean().optional().default(false),
   units: z.array(z.record(z.any())).default([]),
   periods: z.array(z.record(z.any())).default([]),
 });
@@ -36,22 +38,43 @@ export async function migrationRoutes(fastify: FastifyInstance) {
       });
     }
 
-    // Role check if authenticated
-    if (request.user) {
-      const { role, permissions } = request.user;
-      const isAllowed = role === 'SUPER_ADMIN' ||
-        role === 'COMPLEX_MANAGER' ||
-        (role === 'SUB_MANAGER' && (permissions.includes('MANAGE_SETTINGS') || permissions.includes('MANAGE_FINANCES')));
+    // Authentication guard (Defense-in-depth)
+    if (!request.user) {
+      return reply.code(401).header('Content-Type', 'application/problem+json').send({
+        type: 'https://api.parsbuilding.com/errors/unauthorized',
+        title: 'Unauthorized',
+        status: 401,
+        detail: 'Authentication token is required to execute migration.',
+        instance: request.raw.url || request.url,
+      });
+    }
 
-      if (!isAllowed) {
-        return reply.code(403).header('Content-Type', 'application/problem+json').send({
-          type: 'https://api.parsbuilding.com/errors/forbidden',
-          title: 'Forbidden',
-          status: 403,
-          detail: 'Migration requires managerial privileges (SUPER_ADMIN, COMPLEX_MANAGER, or MANAGE_SETTINGS).',
-          instance: request.raw.url || request.url,
-        });
-      }
+    const { role, complexId: userComplexId, permissions } = request.user;
+
+    // Cross-Tenant Authorization Guard: Non-super-admins can ONLY migrate into their assigned complex
+    if (role !== 'SUPER_ADMIN' && userComplexId !== targetComplexId) {
+      return reply.code(403).header('Content-Type', 'application/problem+json').send({
+        type: 'https://api.parsbuilding.com/errors/forbidden',
+        title: 'Forbidden',
+        status: 403,
+        detail: 'Cross-tenant migration forbidden. Managers can only execute migration on their own assigned complex.',
+        instance: request.raw.url || request.url,
+      });
+    }
+
+    // Role check
+    const isAllowed = role === 'SUPER_ADMIN' ||
+      role === 'COMPLEX_MANAGER' ||
+      (role === 'SUB_MANAGER' && (permissions.includes('MANAGE_SETTINGS') || permissions.includes('MANAGE_FINANCES')));
+
+    if (!isAllowed) {
+      return reply.code(403).header('Content-Type', 'application/problem+json').send({
+        type: 'https://api.parsbuilding.com/errors/forbidden',
+        title: 'Forbidden',
+        status: 403,
+        detail: 'Migration requires managerial privileges (SUPER_ADMIN, COMPLEX_MANAGER, or MANAGE_SETTINGS).',
+        instance: request.raw.url || request.url,
+      });
     }
 
     try {
