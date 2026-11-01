@@ -433,6 +433,8 @@ export async function periodRoutes(fastify: FastifyInstance) {
     return reply.send(published);
   });
 
+  const closingPeriods = new Set<string>();
+
   // POST /periods/:id/close: ACTIVE -> CLOSED
   fastify.post('/periods/:id/close', {
     preHandler: [authenticate, requirePermission('CLOSE_PERIODS')]
@@ -440,22 +442,28 @@ export async function periodRoutes(fastify: FastifyInstance) {
     const { id } = request.params as { id: string };
     const user = request.user!;
 
-    const period = await rawPrisma.period.findUnique({
-      where: { id },
-      include: { charges: true }
-    });
-
-    if (!period) {
-      return reply.code(404).send({ error: 'Period not found' });
-    }
-
-    if (user.role !== 'SUPER_ADMIN' && user.complexId !== period.complexId) {
-      return reply.code(403).send({ error: 'Forbidden cross-tenant' });
-    }
-
-    if (period.status !== PeriodStatus.ACTIVE) {
+    if (closingPeriods.has(id)) {
       return reply.code(400).send({ error: 'Only ACTIVE periods can be closed' });
     }
+    closingPeriods.add(id);
+
+    try {
+      const period = await rawPrisma.period.findUnique({
+        where: { id },
+        include: { charges: true }
+      });
+
+      if (!period) {
+        return reply.code(404).send({ error: 'Period not found' });
+      }
+
+      if (user.role !== 'SUPER_ADMIN' && user.complexId !== period.complexId) {
+        return reply.code(403).send({ error: 'Forbidden cross-tenant' });
+      }
+
+      if (period.status !== PeriodStatus.ACTIVE) {
+        return reply.code(400).send({ error: 'Only ACTIVE periods can be closed' });
+      }
 
     let totalCollected = 0;
 
@@ -540,6 +548,9 @@ export async function periodRoutes(fastify: FastifyInstance) {
     });
 
     return reply.send(closedPeriod);
+    } finally {
+      closingPeriods.delete(id);
+    }
   });
 
   // DELETE /periods/:id: Delete draft period
