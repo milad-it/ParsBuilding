@@ -283,3 +283,18 @@ export const migrationApi = {
   migrateComplex: (complexId: string, payload: any) =>
     apiClient.post(`/complexes/${complexId}/migrate`, payload),
 };
+
+// 10. Auth API
+export const authApi = {
+  login: (data: { phone: string; password: string }) => apiClient.post('/auth/login', data),
+  register: (data: any) => apiClient.post('/auth/register', data),
+  me: () => apiClient.get('/auth/me'),
+  logout: () => apiClient.post('/auth/logout'),
+};
+
+// 11. Audit API
+export const auditApi = {
+  getAll: (params?: { complexId?: string; entityType?: string; action?: string; limit?: number; offset?: number }) =>
+    apiClient.get('/audit-logs', { params }),
+};
+

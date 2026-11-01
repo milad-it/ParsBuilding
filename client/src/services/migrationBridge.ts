@@ -270,3 +270,6 @@ export class MigrationBridge {
     return rec;
   }
 }
+
+export const migrationBridge = MigrationBridge;
+

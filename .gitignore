@@ -1,5 +1,8 @@
 # Dependencies & build
 node_modules/
+dist/
+client/dist/
+
 
 # IDE & Editor files
 .vscode/
