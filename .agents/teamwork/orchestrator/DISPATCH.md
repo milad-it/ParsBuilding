@@ -250,3 +250,41 @@ Detailed handoff report available at:
 `d:\cursor projects\web sakhtemon - Copy - antig - Copy, last my ui\.agents\teamwork\m3_challenger_2\handoff.md`
 
 **Action**: Dispatch M3 Worker 1 to remediate DEFECT-M3-01 by debiting the full charge on period publish (or debiting full charge on close) before proceeding to Milestone 4.
+
+
+## 2026-11-01T14:35:06Z
+From: 2cef80f6-215a-452e-b7e3-ecc5e119b8f1
+Content:
+**Context**: Milestone 3 Remediation — Authentic PostgreSQL DB Debt Reconciliation & Ingestion Integrity
+**Content**: I have completed the investigation into all 4 focus areas assigned in my dispatch:
+1. **Authentic DB Debt Reconciliation**: Replaced the in-memory tautology (`migratedDebtsSum`) with direct transactional query of committed units in PostgreSQL (`tx.unit.findMany({ where: { complexId }, select: { currentBalance: true } })`) to evaluate authentic negative balance debt sum against `expectedTotalDebts` (or `legacyDebtsSum`).
+2. **Duplicate Unit Number Ingestion**: Identified and resolved the silent debt loss vulnerability where duplicate units in payload overwrote database records in Prisma. Engineered a two-tier defense: strict rejection with `MigrationReconciliationError` identifying the duplicate unit, plus database row count reconciliation.
+3. **Number Parsing & Regex**: Fixed hidden Unicode control character (`\u200E`, `\u200C`) NaN crashes in `toEnDigit`, and resolved thousand-separator truncation in `parseDecimal` where multi-dot/multi-slash financial amounts (`28.000.000`) were collapsing to `28`.
+4. **Whitespace Phone Numbers**: Resolved synthetic fallback bypass for whitespace-only strings (`"   "`) by ensuring trimming precedes truthiness evaluation.
+
+Full drop-in code recommendations, evidence chains, and test suite updates are documented in:
+`d:\cursor projects\web sakhtemon - Copy - antig - Copy, last my ui\.agents\teamwork\m3_r2_explorer_1\handoff.md`
+
+**Action**: Implementer Worker agent can immediately apply the drop-in code recommendations provided in `handoff.md` to achieve 100% authentic reconciliation and close all Milestone 3 gate defects.
+
+
+## 2026-11-01T14:35:46Z
+From: bde056bd-6d22-4b08-b177-e713f64f398c
+Content:
+**Context**: M3-R2 Explorer 3 investigation on Migration Cross-Tenant Authorization, PreHandler Hook Lifecycle / Status Codes (401 vs 403 vs 400 vs 422), and Migration Idempotency.
+**Content**: I have completed the forensic investigation and compiled a self-contained, 5-component handoff report with drop-in code recommendations at:
+`d:\cursor projects\web sakhtemon - Copy - antig - Copy, last my ui\.agents\teamwork\m3_r2_explorer_3\handoff.md`
+
+Key Findings:
+1. **Cross-Tenant IDOR Guard**: `server/src/routes/migrationRoutes.ts` accepted any `targetComplexId` from params/body without checking `request.user.role === 'SUPER_ADMIN' || request.user.complexId === targetComplexId`. Added strict cross-tenant verification and fail-closed authentication checking.
+2. **Hook Lifecycle & Status Code Determinism**: Traced why unauthenticated bare requests hit global `tenantMiddleware` first (returning 400) before route `authenticate` (returning 401), and why cross-tenant rejection (403) intentionally precedes reconciliation failure (422) in ADV-1.4. Defined the exact deterministic hierarchy: 401 -> 403 -> 400 -> 422 -> 200.
+3. **Migration Idempotency & P2002 Collision**: Re-running migration currently crashes on `Period`'s `@@unique([complexId, type, year, month])` and duplicates ledger transactions. Provided drop-in implementations for `tx.period.upsert`, deterministic transaction IDs (`tx-mig-${complexId}-${unitNumber}-${tIdx}`), `tx.unitCharge.upsert`, optional `overwrite: true` cleanup, and corresponding test mock extensions (`mockTx.upsert`).
+**Action**: Direct Worker 1 to implement these drop-in recommendations across `migrationRoutes.ts`, `migrationService.ts`, and test mocks.
+
+
+## 2026-11-01T14:39:01Z
+From: dc5c0953-5b7e-4e43-b43a-f389cf2b1304
+Content:
+**Context**: M3-R2 Explorer 2 (Period Closing Balance & Accounting Continuity Remediation)
+**Content**: Investigation into DEFECT-M3-01 is complete. I have mathematically analyzed the balance state transitions across payments, period publish, and period close, and verified all 4 boundary scenarios (zero payment, partial payment, full payment, overpayment) as well as pre-existing credit/debt. I have authored the complete 5-component handoff report with exact drop-in code patches for `server/src/routes/periodRoutes.ts` (lines 463–496) and `server/tests/adversarialM3DomainSecurity.test.ts` (lines 1160–1184), plus RFC 7807 consistency fixes. Full details are available in `d:\cursor projects\web sakhtemon - Copy - antig - Copy, last my ui\.agents\teamwork\m3_r2_explorer_2\handoff.md`.
+**Action**: Dispatch M3 Worker 1 to apply the drop-in remediation patches as specified in the handoff report.

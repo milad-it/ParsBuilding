@@ -1,5 +1,6 @@
 ## Current Status
-Last visited: 2026-11-01T14:12:50Z
+Last visited: 2026-11-01T14:32:45Z
+
 
 
 - [x] Phase 0 Survey completed by 3 Explorers
@@ -16,14 +17,13 @@ Last visited: 2026-11-01T14:12:50Z
   - [x] Dispatch Worker to implement Milestone 3 (completed, 120 server tests & 214 E2E tests passing, commit `e3bb2ed` pushed)
   - [x] Dispatch Gate verification agents (5 agents reported: Gate Result FAIL due to in-memory debt reconciliation tautology, period close double-crediting accounting bug, migration cross-tenant IDOR, and ADV-2.2 debt loss)
   - [ ] Iteration 2 (Remediation):
-    - [ ] Dispatch 3 Explorers for remediation blueprints (running)
-    - [ ] Dispatch Worker 2 to remediate defects
+    - [x] Dispatch 3 Explorers for remediation blueprints (completed, blueprints delivered)
+    - [ ] Dispatch Worker 2 to remediate defects (running)
     - [ ] Dispatch Gate verification agents (Reviewers, Challengers, Auditor)
 
 ## Active Dispatches
-- `2cef80f6-215a-452e-b7e3-ecc5e119b8f1` (M3-R2 Explorer 1: DB Debts Reconciliation & Ingestion Integrity) — running
-- `dc5c0953-5b7e-4e43-b43a-f389cf2b1304` (M3-R2 Explorer 2: Period Close Balance Accounting Math) — running
-- `bde056bd-6d22-4b08-b177-e713f64f398c` (M3-R2 Explorer 3: Cross-Tenant Security & Idempotency) — running
+- `d896bf97-43ae-4a2a-b87d-2f6961b36227` (M3 Worker 2: Milestone 3 Remediation Worker) — running
+
 
 ## Iteration Status
 Current iteration: 2 / 32 (Milestone 3 Remediation)
