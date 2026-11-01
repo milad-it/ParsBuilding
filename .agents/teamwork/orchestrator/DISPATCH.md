@@ -48,3 +48,29 @@ Perform a comprehensive audit and debugging of all building accounting logic, ch
 - [ ] Automated test suite verifies all building charge calculation modes (by area, occupants, fixed, or equal share).
 - [ ] Expense allocations, payments, debts, and settlement reports produce zero rounding errors or mathematical discrepancies across all test scenarios.
 - [ ] All identified computational and logic bugs are resolved and validated by test passes.
+
+
+## 2026-11-01T13:29:35Z
+From: 5e06427b-6332-4e68-9516-df1d31437294
+Content:
+Use a full team (یه تیم کامل). Build a commercial SaaS-ready, multi-tenant building management platform with a world-class UI/UX featuring 3D elements, a 100% online real-time Node.js and PostgreSQL backend, hardened multi-tenant security, immutable audit logging, granular RBAC, resident portals, future-ready chat/AI foundations, and a fully tested computational core.
+
+Working directory: d:\cursor projects\web sakhtemon - Copy - antig - Copy, last my ui
+Integrity mode: development
+
+Requirements & Acceptance Criteria are fully specified in:
+d:\cursor projects\web sakhtemon - Copy - antig - Copy, last my ui\.agents\teamwork\ORIGINAL_REQUEST.md
+and global project specifications in:
+d:\cursor projects\web sakhtemon - Copy - antig - Copy, last my ui\PROJECT.md
+
+Current State & Resume Instructions:
+1. M1 (Backend Foundation, PostgreSQL + Prisma schema, Core computational accounting engine) is fully completed and verified.
+2. M2 (Security Hardening, Argon2id auth, 4-tier RBAC, dual-source tenant isolation, RFC 7807 problem details, rate limiting, and immutable audit logging) was remediated in commit `200d91c` and has passed all M2-R2 Gate agents (Reviewer 1 APPROVE, Challenger 1 APPROVE, Challenger 2 APPROVE, Auditor 1 CLEAN, with 107 server tests and 214 E2E tests passing). Update GATE_STATUS.md to reflect M2 PASS.
+3. Resume execution through the remaining milestones per PROJECT.md:
+   - Milestone 3: Lossless Data Migration & Real-Time REST/WebSocket API Integration (migrating local IndexedDB/LocalStorage data into PostgreSQL, wiring frontend stores to backend APIs).
+   - Milestone 4: World-Class SaaS UI/UX, 3D Visual Elements & Dedicated Resident Portal.
+   - Milestone 5: Final Acceptance (Full E2E suite pass, comprehensive accounting calculation verification, adversarial security audit).
+4. Follow full team decomposition protocol: Explorers -> Worker -> Reviewers -> Challengers -> Auditor -> Gate evaluation.
+5. Strict adherence to AGENTS.md / GEMINI.md git commit and push protocol on origin/main after every file modification.
+6. Your working directory is `.agents/teamwork/orchestrator/`.
+7. Your parent is Project Sentinel (`5e06427b-6332-4e68-9516-df1d31437294`). Report progress and gate transitions regularly.
