@@ -4,13 +4,25 @@ import { verifyAccessToken } from './authService';
 
 export type RealtimeEventType =
   | 'NEW_ANNOUNCEMENT'
+  | 'announcement:created'
   | 'PAYMENT_RECEIVED'
+  | 'payment:received'
   | 'BILLING_PERIOD_OPENED'
+  | 'period:published'
   | 'BILLING_PERIOD_CLOSED'
+  | 'period:closed'
   | 'RECEIPT_VERIFIED'
+  | 'receipt:verified'
+  | 'RECEIPT_REJECTED'
+  | 'receipt:rejected'
+  | 'CHARGE_UPDATED'
+  | 'charge:updated'
+  | 'UNIT_BALANCE_UPDATED'
+  | 'unit:balance_updated'
   | 'PONG'
   | 'ERROR'
-  | 'SUBSCRIBED';
+  | 'SUBSCRIBED'
+  | (string & {});
 
 export interface AuthenticatedSocketUser {
   userId: string;

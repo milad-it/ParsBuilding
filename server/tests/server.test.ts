@@ -60,7 +60,7 @@ describe('Fastify Server Bootstrap & Health Endpoint', () => {
       }
     });
 
-    // Since /api/v1/units is not registered yet, it passes tenant middleware and reaches router (404)
-    expect(response.statusCode).toBe(404);
+    // Passes tenant middleware (would be 400 if tenant missing) and reaches route authentication (401)
+    expect(response.statusCode).toBe(401);
   });
 });
