@@ -109,7 +109,7 @@ describe('Fastify Domain REST APIs Integration', () => {
       return null;
     });
     vi.spyOn(rawPrisma.complex, 'create').mockImplementation(async ({ data }: any) => {
-      const rec = { id: data.id || `cpx-${Date.now()}`, ...data };
+      const rec = { id: data.id || `cpx-${Date.now()}-${Math.random()}`, ...data };
       db.complexes.set(rec.id, rec);
       return rec;
     });
@@ -128,7 +128,7 @@ describe('Fastify Domain REST APIs Integration', () => {
 
     vi.spyOn(rawPrisma.building, 'findMany').mockImplementation(async () => Array.from(db.buildings.values()));
     vi.spyOn(rawPrisma.building, 'create').mockImplementation(async ({ data }: any) => {
-      const rec = { id: `bld-${Date.now()}`, ...data };
+      const rec = { id: `bld-${Date.now()}-${Math.random()}`, ...data };
       db.buildings.set(rec.id, rec);
       return rec;
     });
@@ -149,7 +149,7 @@ describe('Fastify Domain REST APIs Integration', () => {
       return null;
     });
     vi.spyOn(rawPrisma.unit, 'create').mockImplementation(async ({ data }: any) => {
-      const rec = { id: `unit-${Date.now()}`, ...data };
+      const rec = { id: `unit-${Date.now()}-${Math.random()}`, ...data };
       db.units.set(rec.id, rec);
       return rec;
     });
@@ -173,7 +173,7 @@ describe('Fastify Domain REST APIs Integration', () => {
           return upd;
         }
       }
-      const rec = { id: `unit-${Date.now()}`, ...create };
+      const rec = { id: `unit-${Date.now()}-${Math.random()}`, ...create };
       db.units.set(rec.id, rec);
       return rec;
     });
@@ -191,7 +191,7 @@ describe('Fastify Domain REST APIs Integration', () => {
       return null;
     });
     vi.spyOn(rawPrisma.resident, 'create').mockImplementation(async ({ data }: any) => {
-      const rec = { id: `res-${Date.now()}`, ...data };
+      const rec = { id: `res-${Date.now()}-${Math.random()}`, ...data };
       db.residents.set(rec.id, rec);
       return rec;
     });
@@ -201,18 +201,18 @@ describe('Fastify Domain REST APIs Integration', () => {
           return r;
         }
       }
-      const rec = { id: `res-${Date.now()}`, ...create };
+      const rec = { id: `res-${Date.now()}-${Math.random()}`, ...create };
       db.residents.set(rec.id, rec);
       return rec;
     });
 
     vi.spyOn(rawPrisma.unitResident, 'create').mockImplementation(async ({ data }: any) => {
-      const rec = { id: `ur-${Date.now()}`, ...data };
+      const rec = { id: `ur-${Date.now()}-${Math.random()}`, ...data };
       db.unitResidents.set(rec.id, rec);
       return rec;
     });
     vi.spyOn(rawPrisma.unitResident, 'upsert').mockImplementation(async ({ create }: any) => {
-      const rec = { id: `ur-${Date.now()}`, ...create };
+      const rec = { id: `ur-${Date.now()}-${Math.random()}`, ...create };
       db.unitResidents.set(rec.id, rec);
       return rec;
     });
@@ -229,7 +229,7 @@ describe('Fastify Domain REST APIs Integration', () => {
       return null;
     });
     vi.spyOn(rawPrisma.period, 'create').mockImplementation(async ({ data }: any) => {
-      const rec = { id: `prd-${Date.now()}`, ...data };
+      const rec = { id: `prd-${Date.now()}-${Math.random()}`, ...data };
       db.periods.set(rec.id, rec);
       return rec;
     });
@@ -242,7 +242,7 @@ describe('Fastify Domain REST APIs Integration', () => {
           return upd;
         }
       }
-      const rec = { id: `prd-${Date.now()}`, ...create };
+      const rec = { id: `prd-${Date.now()}-${Math.random()}`, ...create };
       db.periods.set(rec.id, rec);
       return rec;
     });
@@ -263,7 +263,7 @@ describe('Fastify Domain REST APIs Integration', () => {
 
     vi.spyOn(rawPrisma.unitCharge, 'findMany').mockImplementation(async () => Array.from(db.unitCharges.values()));
     vi.spyOn(rawPrisma.unitCharge, 'create').mockImplementation(async ({ data }: any) => {
-      const rec = { id: `chg-${Date.now()}`, ...data };
+      const rec = { id: `chg-${Date.now()}-${Math.random()}`, ...data };
       db.unitCharges.set(rec.id, rec);
       return rec;
     });
@@ -276,7 +276,7 @@ describe('Fastify Domain REST APIs Integration', () => {
           return upd;
         }
       }
-      const rec = { id: `chg-${Date.now()}`, ...create };
+      const rec = { id: `chg-${Date.now()}-${Math.random()}`, ...create };
       db.unitCharges.set(rec.id, rec);
       return rec;
     });
@@ -285,7 +285,7 @@ describe('Fastify Domain REST APIs Integration', () => {
     vi.spyOn(rawPrisma.ledgerTransaction, 'findMany').mockImplementation(async () => Array.from(db.transactions.values()));
     vi.spyOn(rawPrisma.ledgerTransaction, 'count').mockImplementation(async () => db.transactions.size);
     vi.spyOn(rawPrisma.ledgerTransaction, 'create').mockImplementation(async ({ data }: any) => {
-      const rec = { id: `tx-${Date.now()}`, ...data };
+      const rec = { id: `tx-${Date.now()}-${Math.random()}`, ...data };
       db.transactions.set(rec.id, rec);
       return rec;
     });
@@ -298,7 +298,7 @@ describe('Fastify Domain REST APIs Integration', () => {
           return upd;
         }
       }
-      const rec = { id: `tx-${Date.now()}`, ...create };
+      const rec = { id: `tx-${Date.now()}-${Math.random()}`, ...create };
       db.transactions.set(rec.id, rec);
       return rec;
     });
@@ -315,7 +315,7 @@ describe('Fastify Domain REST APIs Integration', () => {
 
     vi.spyOn(rawPrisma.chatMessage, 'findMany').mockImplementation(async () => Array.from(db.chatMessages.values()));
     vi.spyOn(rawPrisma.chatMessage, 'create').mockImplementation(async ({ data }: any) => {
-      const rec = { id: `msg-${Date.now()}`, ...data, createdAt: new Date() };
+      const rec = { id: `msg-${Date.now()}-${Math.random()}`, ...data, createdAt: new Date() };
       db.chatMessages.set(rec.id, rec);
       return rec;
     });
