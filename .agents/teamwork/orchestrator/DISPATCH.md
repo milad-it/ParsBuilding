@@ -288,3 +288,31 @@ Content:
 **Context**: M3-R2 Explorer 2 (Period Closing Balance & Accounting Continuity Remediation)
 **Content**: Investigation into DEFECT-M3-01 is complete. I have mathematically analyzed the balance state transitions across payments, period publish, and period close, and verified all 4 boundary scenarios (zero payment, partial payment, full payment, overpayment) as well as pre-existing credit/debt. I have authored the complete 5-component handoff report with exact drop-in code patches for `server/src/routes/periodRoutes.ts` (lines 463–496) and `server/tests/adversarialM3DomainSecurity.test.ts` (lines 1160–1184), plus RFC 7807 consistency fixes. Full details are available in `d:\cursor projects\web sakhtemon - Copy - antig - Copy, last my ui\.agents\teamwork\m3_r2_explorer_2\handoff.md`.
 **Action**: Dispatch M3 Worker 1 to apply the drop-in remediation patches as specified in the handoff report.
+
+## 2026-11-01T15:51:20Z
+From: 5e06427b-6332-4e68-9516-df1d31437294
+Content:
+Use a full team (یه تیم کامل). Build a commercial SaaS-ready, multi-tenant building management platform with a world-class UI/UX featuring 3D elements, a 100% online real-time Node.js and PostgreSQL backend, hardened multi-tenant security, immutable audit logging, granular RBAC, resident portals, future-ready chat/AI foundations, and a fully tested computational core.
+
+Working directory: d:\cursor projects\web sakhtemon - Copy - antig - Copy, last my ui
+Integrity mode: development
+
+Requirements & Acceptance Criteria are fully specified in:
+d:\cursor projects\web sakhtemon - Copy - antig - Copy, last my ui\.agents\teamwork\ORIGINAL_REQUEST.md
+and global project specifications in:
+d:\cursor projects\web sakhtemon - Copy - antig - Copy, last my ui\PROJECT.md
+
+Current State & Resume Instructions:
+1. M1 (Backend Foundation, PostgreSQL + Prisma schema, Core computational accounting engine) is fully completed and verified (PASS).
+2. M2 (Security Hardening, Argon2id auth, 4-tier RBAC, dual-source tenant isolation, RFC 7807 problem details, rate limiting, and immutable audit logging) is fully completed and verified (PASS, commit `200d91c`).
+3. Milestone 3 (Lossless Data Migration & Real-Time REST/WebSocket API Integration):
+   - Worker 1 implemented full migration engine, domain REST routes, WebSocket event broadcasting, and client services (commit `e3bb2ed`).
+   - Gate 1 evaluation identified 4 defects (authentic PostgreSQL debt reconciliation query, period close double-crediting DEFECT-M3-01, migration cross-tenant IDOR, and numeral parsing).
+   - Worker 2 implemented code remediations in `migrationService.ts`, `periodRoutes.ts`, `migrationRoutes.ts`, and `numberUtils.ts` (checkpointed in commit `0558eaf`).
+   - Now resume Milestone 3: complete test verification of M3-R2 (server tests: currently 163/164 pass with only `domainApis.test.ts` needing update for DB debt reconciliation, and E2E tests: 214/214 pass), commit/push changes, and dispatch the 5 Gate agents (Reviewer 1, Reviewer 2, Challenger 1, Challenger 2, Forensic Auditor) to evaluate Gate 3.
+4. Upon Gate 3 PASS, immediately proceed to:
+   - Milestone 4: World-Class SaaS UI/UX, 3D Visual Elements & Dedicated Resident Portal.
+   - Milestone 5: Final Acceptance (Full E2E suite pass, comprehensive accounting calculation verification, adversarial security audit).
+5. Strict adherence to AGENTS.md / GEMINI.md git commit and push protocol on origin/main after every file modification.
+6. Your working directory is `.agents/teamwork/orchestrator/`.
+7. Your parent is Project Sentinel (`5e06427b-6332-4e68-9516-df1d31437294`). Report progress and gate transitions regularly.

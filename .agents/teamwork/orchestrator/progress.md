@@ -1,8 +1,5 @@
 ## Current Status
-Last visited: 2026-11-01T14:42:50Z
-
-
-
+Last visited: 2026-11-01T15:55:00Z
 
 - [x] Phase 0 Survey completed by 3 Explorers
 - [x] Formulated PROJECT.md architecture & feature inventory
@@ -11,21 +8,17 @@ Last visited: 2026-11-01T14:42:50Z
 - [x] Milestone 2 (Security Hardening, Authentication, RBAC, Rate Limiting & Audit Logging) — **DONE** (Gate Result: PASS, commit `200d91c`)
 - [ ] Milestone 3 (Lossless Data Migration & Real-Time REST/WebSocket API Integration):
   - [x] Iteration 1: Dispatch 3 parallel Explorers
-    - [x] Explorer 1: Legacy storage data structures (`app_db_pars_v6`), migration ingestion pipeline, and reconciliation assertions ($\Delta Fund = 0, \Delta Debts = 0$) (completed, report in `m3_explorer_1/handoff.md`)
-    - [x] Explorer 2: REST endpoints & WebSocket live event streaming across all models (completed, report in `m3_explorer_2/handoff.md`)
-    - [x] Explorer 3: Client store/state layer, real-time API client, and migration bridge (completed, commit `4e8cdb5`, report in `m3_explorer_3/handoff.md`)
   - [x] Synthesize explorer findings and formulate Worker blueprint
-  - [x] Dispatch Worker to implement Milestone 3 (completed, 120 server tests & 214 E2E tests passing, commit `e3bb2ed` pushed)
-  - [x] Dispatch Gate verification agents (5 agents reported: Gate Result FAIL due to in-memory debt reconciliation tautology, period close double-crediting accounting bug, migration cross-tenant IDOR, and ADV-2.2 debt loss)
+  - [x] Dispatch Worker 1 to implement Milestone 3 (commit `e3bb2ed`)
+  - [x] Dispatch Gate verification agents (5 agents reported: Gate Result FAIL)
   - [ ] Iteration 2 (Remediation):
     - [x] Dispatch 3 Explorers for remediation blueprints (completed, blueprints delivered)
-    - [ ] Dispatch Worker 2 to remediate defects (running)
-    - [ ] Dispatch Gate verification agents (Reviewers, Challengers, Auditor)
+    - [x] Worker 2 implemented code remediations (commit `0558eaf`)
+    - [ ] Dispatch Worker 3 to finalize `domainApis.test.ts`, verify 164 server tests & 214 E2E tests, and git commit/push
+    - [ ] Dispatch Gate verification agents (Reviewer 1, Reviewer 2, Challenger 1, Challenger 2, Forensic Auditor)
 
 ## Active Dispatches
-- `d896bf97-43ae-4a2a-b87d-2f6961b36227` (M3 Worker 2: Milestone 3 Remediation Worker) — running
-
+- `m3_worker_3` (Milestone 3 Finalization Engineer) — dispatching
 
 ## Iteration Status
-Current iteration: 2 / 32 (Milestone 3 Remediation)
-
+Current iteration: 2 / 32 (Milestone 3 Remediation Finalization)
