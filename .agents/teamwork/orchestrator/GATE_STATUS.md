@@ -48,10 +48,11 @@ Gate Result: **PASS**
 | Agent | Role | Verdict | Source |
 |-------|------|---------|--------|
 | m3_worker_1 | teamwork_worker | DONE (120/120 server tests, 214/214 E2E tests, clean build, commit e3bb2ed) | handoff.md |
-| m3_reviewer_1 | teamwork_reviewer | PENDING | - |
-| m3_reviewer_2 | teamwork_reviewer | PENDING | - |
-| m3_challenger_1 | teamwork_challenger | PENDING | - |
-| m3_challenger_2 | teamwork_challenger | PENDING | - |
-| m3_auditor_1 | teamwork_auditor | PENDING | - |
+| m3_reviewer_1 | teamwork_reviewer | REQUEST_CHANGES (In-memory debt reconciliation tautology, migration cross-tenant IDOR) | handoff.md |
+| m3_reviewer_2 | teamwork_reviewer | REQUEST_CHANGES (Double-crediting accounting bug on period close) | handoff.md |
+| m3_challenger_1 | teamwork_challenger | REJECT (ADV-2.2 debt loss on duplicate units, missing DB query for debts reconciliation) | handoff.md |
+| m3_challenger_2 | teamwork_challenger | REJECT (DEFECT-M3-01 double-crediting payments on period close) | handoff.md |
+| m3_auditor_1 | teamwork_auditor | CLEAN | handoff.md |
 
-Gate Result: **EVALUATING** (5 Gate agents running)
+Gate Result: **FAIL** (Reviewers & Challengers reject due to in-memory debt reconciliation tautology, period close double-crediting calculation defect, migration cross-tenant check, and ADV-2.2 duplicate unit silent debt drop)
+
