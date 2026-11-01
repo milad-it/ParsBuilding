@@ -178,10 +178,10 @@ export const UnitsPage: React.FC<{
       header: 'شماره واحد',
       render: (u) => (
         <div className="flex items-center gap-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-800 text-xs font-bold text-white">
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-stone-100 text-xs font-bold text-stone-800 border border-stone-200">
             {toFaDigit(u.unitNumber)}
           </span>
-          <span className="font-semibold text-slate-200">{u.unitName || `واحد ${toFaDigit(u.unitNumber)}`}</span>
+          <span className="font-semibold text-stone-800">{u.unitName || `واحد ${toFaDigit(u.unitNumber)}`}</span>
         </div>
       )
     },
@@ -189,14 +189,14 @@ export const UnitsPage: React.FC<{
       key: 'floor',
       header: 'طبقه',
       align: 'center',
-      render: (u) => <span className="font-mono text-slate-300 num-tabular">{toFaDigit(u.floor ?? '-')}</span>
+      render: (u) => <span className="font-mono text-stone-600 num-tabular">{toFaDigit(u.floor ?? '-')}</span>
     },
     {
       key: 'area',
       header: 'متراژ (متر)',
       align: 'center',
       render: (u) => (
-        <span className="font-mono text-slate-300 num-tabular">
+        <span className="font-mono text-stone-600 num-tabular">
           {toFaDigit(Math.round(Number(u.area || 0)))}
         </span>
       )
@@ -206,8 +206,8 @@ export const UnitsPage: React.FC<{
       header: 'تعداد نفرات',
       align: 'center',
       render: (u) => (
-        <span className="inline-flex items-center gap-1 font-mono text-slate-300 num-tabular">
-          <Users className="w-3.5 h-3.5 text-slate-400" />
+        <span className="inline-flex items-center gap-1 font-mono text-stone-600 num-tabular">
+          <Users className="w-3.5 h-3.5 text-stone-400" />
           {toFaDigit(u.occupants || 0)}
         </span>
       )
@@ -219,11 +219,11 @@ export const UnitsPage: React.FC<{
       render: (u) =>
         u.hasPackage ? (
           <Badge variant="amber" size="sm">
-            <Flame className="w-3 h-3 me-1 text-amber-400" />
+            <Flame className="w-3 h-3 me-1 text-amber-600" />
             پکیج مستقل
           </Badge>
         ) : (
-          <span className="text-[11px] text-slate-400">موتورخانه مرکزی</span>
+          <span className="text-[11px] text-stone-500">موتورخانه مرکزی</span>
         )
     },
     {
@@ -233,7 +233,7 @@ export const UnitsPage: React.FC<{
         <select
           value={u.occType || 'OWNER_OCCUPIED'}
           onChange={(e) => handleQuickOccupancyToggle(u, e.target.value)}
-          className="rounded-lg border border-slate-700 bg-slate-900 px-2 py-1 text-xs font-medium text-slate-200 focus:outline-none focus:border-brand-500 cursor-pointer"
+          className="rounded-lg border border-stone-300 bg-white px-2 py-1 text-xs font-medium text-stone-800 focus:outline-none focus:border-brand-600 cursor-pointer"
         >
           <option value="OWNER_OCCUPIED">مالک ساکن</option>
           <option value="TENANT_OCCUPIED">مستأجر</option>
@@ -249,7 +249,7 @@ export const UnitsPage: React.FC<{
         const isDebt = bal > 0;
         return (
           <Badge variant={isDebt ? 'rose' : 'emerald'} size="md">
-            <span className="font-mono num-tabular">
+            <span className="font-sans font-bold num-tabular">
               {isDebt ? `+${formatToman(bal)} بدهکار` : `${formatToman(Math.abs(bal))} تسویه`}
             </span>
           </Badge>
@@ -264,21 +264,21 @@ export const UnitsPage: React.FC<{
         <div className="flex items-center justify-center gap-1.5">
           <button
             onClick={() => handleOpenStatement(u)}
-            className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-800 hover:text-slate-100 transition-colors"
+            className="rounded-lg p-1.5 text-stone-500 hover:bg-stone-100 hover:text-stone-800 transition-colors"
             title="صورت‌حساب واحد"
           >
             <FileText className="w-4 h-4" />
           </button>
           <button
             onClick={() => onOpenPaymentForUnit?.(u.id)}
-            className="rounded-lg p-1.5 text-emerald-400 hover:bg-emerald-500/10 transition-colors"
+            className="rounded-lg p-1.5 text-emerald-600 hover:bg-emerald-50 transition-colors"
             title="ثبت واریزی برای این واحد"
           >
             <CreditCard className="w-4 h-4" />
           </button>
           <button
             onClick={() => handleOpenEdit(u)}
-            className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-800 hover:text-slate-100 transition-colors"
+            className="rounded-lg p-1.5 text-stone-500 hover:bg-stone-100 hover:text-stone-800 transition-colors"
             title="ویرایش مشخصات"
           >
             <Edit2 className="w-4 h-4" />
@@ -293,8 +293,8 @@ export const UnitsPage: React.FC<{
       {/* Page Title & Add Button */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-black text-white">مدیریت واحدها و ساکنین</h2>
-          <p className="text-xs text-slate-400 mt-1">
+          <h2 className="text-xl font-black text-stone-900">مدیریت واحدها و ساکنین</h2>
+          <p className="text-xs text-stone-500 mt-1">
             مشخصات فیزیکی، متراژ، نفرات ساکن و تراز حساب جاری هر واحد
           </p>
         </div>
@@ -325,7 +325,7 @@ export const UnitsPage: React.FC<{
           className={`rounded-xl px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer ${
             activeFilter === 'ALL'
               ? 'bg-brand-600 text-white shadow-sm'
-              : 'bg-slate-900 text-slate-400 hover:bg-slate-800 hover:text-white border border-slate-800'
+              : 'bg-white text-stone-600 hover:bg-stone-100 border border-stone-200'
           }`}
         >
           همه واحدها ({toFaDigit(units.length)})
@@ -335,7 +335,7 @@ export const UnitsPage: React.FC<{
           className={`rounded-xl px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer ${
             activeFilter === 'DEBTORS'
               ? 'bg-rose-600 text-white shadow-sm'
-              : 'bg-slate-900 text-rose-400 hover:bg-slate-800 border border-slate-800'
+              : 'bg-white text-rose-600 hover:bg-rose-50 border border-stone-200'
           }`}
         >
           واحدهای بدهکار ({toFaDigit(units.filter((u) => Number(u.currentBalance || 0) > 0).length)})
@@ -344,8 +344,8 @@ export const UnitsPage: React.FC<{
           onClick={() => setActiveFilter('VACANT')}
           className={`rounded-xl px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer ${
             activeFilter === 'VACANT'
-              ? 'bg-slate-700 text-white shadow-sm'
-              : 'bg-slate-900 text-slate-400 hover:bg-slate-800 border border-slate-800'
+              ? 'bg-stone-700 text-white shadow-sm'
+              : 'bg-white text-stone-600 hover:bg-stone-100 border border-stone-200'
           }`}
         >
           واحدهای خالی ({toFaDigit(units.filter((u) => u.occType === 'VACANT').length)})
@@ -354,8 +354,8 @@ export const UnitsPage: React.FC<{
           onClick={() => setActiveFilter('TENANT')}
           className={`rounded-xl px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer ${
             activeFilter === 'TENANT'
-              ? 'bg-indigo-600 text-white shadow-sm'
-              : 'bg-slate-900 text-slate-400 hover:bg-slate-800 border border-slate-800'
+              ? 'bg-brand-700 text-white shadow-sm'
+              : 'bg-white text-stone-600 hover:bg-stone-100 border border-stone-200'
           }`}
         >
           مستأجران ({toFaDigit(units.filter((u) => u.occType === 'TENANT_OCCUPIED').length)})
@@ -365,7 +365,7 @@ export const UnitsPage: React.FC<{
           className={`rounded-xl px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer ${
             activeFilter === 'PACKAGE'
               ? 'bg-amber-600 text-white shadow-sm'
-              : 'bg-slate-900 text-amber-400 hover:bg-slate-800 border border-slate-800'
+              : 'bg-white text-amber-700 hover:bg-amber-50 border border-stone-200'
           }`}
         >
           دارای پکیج مستقل ({toFaDigit(units.filter((u) => u.hasPackage).length)})
@@ -431,11 +431,11 @@ export const UnitsPage: React.FC<{
               required
             />
             <div className="space-y-1.5 text-right">
-              <label className="block text-xs font-medium text-slate-300">نوع سکونت</label>
+              <label className="block text-xs font-semibold text-stone-700">نوع سکونت</label>
               <select
                 value={formOccType}
                 onChange={(e) => setFormOccType(e.target.value)}
-                className="w-full rounded-xl border border-slate-700/80 bg-slate-900/80 px-3 py-2 text-xs font-medium text-slate-200 focus:outline-none focus:border-brand-500"
+                className="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 text-xs font-semibold text-stone-800 focus:outline-none focus:border-brand-600 focus:ring-2 focus:ring-brand-500/15"
               >
                 <option value="OWNER_OCCUPIED">سکونت مالک</option>
                 <option value="TENANT_OCCUPIED">مستأجر</option>
@@ -450,14 +450,14 @@ export const UnitsPage: React.FC<{
               id="hasPackage"
               checked={formHasPackage}
               onChange={(e) => setFormHasPackage(e.target.checked)}
-              className="h-4 w-4 rounded border-slate-700 bg-slate-900 text-brand-600 focus:ring-brand-500"
+              className="h-4 w-4 rounded border-stone-300 bg-white text-brand-600 focus:ring-brand-500"
             />
-            <label htmlFor="hasPackage" className="text-xs text-slate-200 cursor-pointer">
+            <label htmlFor="hasPackage" className="text-xs text-stone-700 cursor-pointer font-medium">
               واحد دارای پکیج و سیستم گرمایش مستقل است (معاف از هزینه گاز مشترک موتورخانه)
             </label>
           </div>
 
-          <div className="flex justify-end gap-2 pt-4 border-t border-slate-800">
+          <div className="flex justify-end gap-2 pt-4 border-t border-stone-200">
             <Button
               type="button"
               variant="outline"
@@ -484,15 +484,15 @@ export const UnitsPage: React.FC<{
         size="lg"
       >
         {statementLoading ? (
-          <div className="py-12 text-center text-xs text-slate-400">در حال دریافت صورت‌حساب...</div>
+          <div className="py-12 text-center text-xs text-stone-400">در حال دریافت صورت‌حساب...</div>
         ) : statementData ? (
           <div className="space-y-4">
-            <div className="rounded-xl bg-slate-950 p-4 border border-slate-800 flex justify-between items-center">
+            <div className="rounded-xl bg-stone-50 p-4 border border-stone-200 flex justify-between items-center">
               <div>
-                <span className="text-xs text-slate-400">مانده تراز فعلی واحد:</span>
+                <span className="text-xs text-stone-500 font-medium">مانده تراز فعلی واحد:</span>
                 <p
-                  className={`text-xl font-bold font-mono num-tabular mt-1 ${
-                    Number(statementData.unit?.currentBalance || 0) > 0 ? 'text-rose-400' : 'text-emerald-400'
+                  className={`text-xl font-bold font-sans num-tabular mt-1 ${
+                    Number(statementData.unit?.currentBalance || 0) > 0 ? 'text-rose-600' : 'text-emerald-600'
                   }`}
                 >
                   {Number(statementData.unit?.currentBalance || 0) > 0
@@ -516,25 +516,25 @@ export const UnitsPage: React.FC<{
 
             {/* Recent Charges */}
             <div className="space-y-2">
-              <h4 className="text-xs font-bold text-slate-300">سوابق شارژ دوره‌ها:</h4>
+              <h4 className="text-xs font-bold text-stone-800">سوابق شارژ دوره‌ها:</h4>
               <div className="max-h-48 overflow-y-auto space-y-1.5">
                 {(statementData.charges || []).length === 0 ? (
-                  <p className="text-xs text-slate-500 py-3 text-center">شارژی ثبت نشده است</p>
+                  <p className="text-xs text-stone-400 py-3 text-center">شارژی ثبت نشده است</p>
                 ) : (
                   statementData.charges.map((c: any) => (
                     <div
                       key={c.id}
-                      className="flex items-center justify-between rounded-xl bg-slate-900/60 p-2.5 border border-slate-800 text-xs"
+                      className="flex items-center justify-between rounded-xl bg-white p-2.5 border border-stone-200 text-xs"
                     >
                       <div>
-                        <span className="font-semibold text-slate-200">
+                        <span className="font-semibold text-stone-800">
                           {c.period?.name || `دوره ${c.periodId?.substring(0, 8)}`}
                         </span>
-                        <span className="ms-2 text-[10px] text-slate-400">
+                        <span className="ms-2 text-[10px] text-stone-500">
                           (سهم ثابت + متراژی + قبوض)
                         </span>
                       </div>
-                      <span className="font-mono font-bold text-slate-100 num-tabular">
+                      <span className="font-sans font-bold text-stone-900 num-tabular">
                         {formatToman(c.amount)} تومان
                       </span>
                     </div>
@@ -545,21 +545,21 @@ export const UnitsPage: React.FC<{
 
             {/* Recent Transactions */}
             <div className="space-y-2">
-              <h4 className="text-xs font-bold text-slate-300">سوابق تراکنش‌های واریزی:</h4>
+              <h4 className="text-xs font-bold text-stone-800">سوابق تراکنش‌های واریزی:</h4>
               <div className="max-h-48 overflow-y-auto space-y-1.5">
                 {(statementData.transactions || []).length === 0 ? (
-                  <p className="text-xs text-slate-500 py-3 text-center">تراکنشی ثبت نشده است</p>
+                  <p className="text-xs text-stone-400 py-3 text-center">تراکنشی ثبت نشده است</p>
                 ) : (
                   statementData.transactions.map((tx: any) => (
                     <div
                       key={tx.id}
-                      className="flex items-center justify-between rounded-xl bg-slate-900/60 p-2.5 border border-slate-800 text-xs"
+                      className="flex items-center justify-between rounded-xl bg-white p-2.5 border border-stone-200 text-xs"
                     >
                       <div>
-                        <span className="font-semibold text-emerald-400">واریز وجه</span>
-                        <span className="ms-2 text-[10px] text-slate-400">{tx.description}</span>
+                        <span className="font-semibold text-emerald-600">واریز وجه</span>
+                        <span className="ms-2 text-[10px] text-stone-500">{tx.description}</span>
                       </div>
-                      <span className="font-mono font-bold text-emerald-400 num-tabular">
+                      <span className="font-sans font-bold text-emerald-600 num-tabular">
                         {formatToman(tx.amount)} تومان
                       </span>
                     </div>

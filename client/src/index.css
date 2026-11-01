@@ -55,18 +55,18 @@
   font-feature-settings: 'tnum' on, 'ss01' on;
 }
 
-/* Sleek custom scrollbars */
+/* Clean custom scrollbars for Light Mode */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.6);
+  background: #f5f5f4;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(100, 116, 139, 0.4);
+  background: #d6d3d1;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(148, 163, 184, 0.6);
+  background: #a8a29e;
 }

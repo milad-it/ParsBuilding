@@ -16,13 +16,13 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       'inline-flex items-center justify-center font-medium rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand-500/50 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none disabled:active:scale-100 select-none cursor-pointer';
 
     const variants = {
-      primary: 'bg-brand-600 hover:bg-brand-500 text-white shadow-md shadow-brand-600/30 hover:shadow-brand-500/50',
-      secondary: 'bg-slate-800 hover:bg-slate-700 text-slate-100 border border-slate-700/60',
-      outline: 'border border-slate-700 text-slate-300 hover:bg-slate-800/80 hover:text-white',
-      ghost: 'text-slate-300 hover:bg-slate-850 hover:text-white',
-      danger: 'bg-rose-600 hover:bg-rose-500 text-white shadow-md shadow-rose-600/30',
-      success: 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-600/30',
-      glass: 'bg-slate-900/60 backdrop-blur-md border border-slate-700/40 text-slate-100 hover:bg-slate-800/60 shadow-glass'
+      primary: 'bg-brand-600 hover:bg-brand-700 text-white shadow-sm shadow-brand-600/20 active:bg-brand-800',
+      secondary: 'bg-stone-100 hover:bg-stone-200 text-stone-800 border border-stone-200 shadow-sm',
+      outline: 'border border-stone-300 text-stone-700 hover:bg-stone-100 hover:text-stone-900',
+      ghost: 'text-stone-700 hover:bg-stone-100 hover:text-stone-900',
+      danger: 'bg-rose-600 hover:bg-rose-700 text-white shadow-sm shadow-rose-600/20',
+      success: 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm shadow-emerald-600/20',
+      glass: 'bg-white border border-stone-200 text-stone-700 hover:bg-stone-50 shadow-sm'
     };
 
     const sizes = {

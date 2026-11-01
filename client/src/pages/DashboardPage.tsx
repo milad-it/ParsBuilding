@@ -155,14 +155,14 @@ export const DashboardPage: React.FC<{
       {/* Top Header & Quick Action Buttons */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-black text-white">داشبورد جامع مدیریت</h2>
-          <p className="text-xs text-slate-400 mt-1">
-            وضعیت مالی، نرخ وصولی شارژ و کنترل هوشمند تراز ساختمان در یک نگاه
+          <h2 className="text-xl font-black text-stone-900">داشبورد جامع مدیریت</h2>
+          <p className="text-xs text-stone-500 mt-1">
+            وضعیت صندوق، مانده بدهی‌ها و کنترل یکپارچه تراز مالی ساختمان در یک نگاه
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Button
-            variant="glass"
+            variant="secondary"
             size="sm"
             onClick={fetchDashboardData}
             iconStart={<RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />}
@@ -170,10 +170,10 @@ export const DashboardPage: React.FC<{
             بروزرسانی
           </Button>
           <Button
-            variant="secondary"
+            variant="outline"
             size="sm"
             onClick={() => onNavigate?.('periods')}
-            iconStart={<PlusCircle className="w-4 h-4 text-brand-400" />}
+            iconStart={<PlusCircle className="w-4 h-4 text-brand-600" />}
           >
             صدور دوره جدید
           </Button>
@@ -188,7 +188,7 @@ export const DashboardPage: React.FC<{
         </div>
       </div>
 
-      {/* 5 High-Impact Metric Cards */}
+      {/* 4 High-Impact Metric Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           title="موجودی کل صندوق ساختمان"
@@ -231,9 +231,9 @@ export const DashboardPage: React.FC<{
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="h-2.5 w-2.5 rounded-full bg-brand-500 animate-pulse" />
-            <h3 className="text-sm font-bold text-slate-100">ماتریس سه‌بعدی و وضعیت لحظه‌ای واحدها</h3>
+            <h3 className="text-sm font-bold text-stone-800">ماتریس سه‌بعدی و وضعیت لحظه‌ای واحدها</h3>
           </div>
-          <span className="text-xs text-slate-400">
+          <span className="text-xs text-stone-500">
             جهت مشاهده جزئیات یا ثبت واریزی روی هر واحد کلیک کنید
           </span>
         </div>
@@ -249,45 +249,45 @@ export const DashboardPage: React.FC<{
       {/* Quick Debtors Table & Recent Ledger Transactions */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Highest Debtors */}
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-5 shadow-glass space-y-3">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-            <h3 className="text-sm font-bold text-slate-100 flex items-center gap-2">
-              <TrendingDown className="w-4 h-4 text-rose-400" />
+        <div className="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm space-y-3">
+          <div className="flex items-center justify-between border-b border-stone-100 pb-3">
+            <h3 className="text-sm font-bold text-stone-800 flex items-center gap-2">
+              <TrendingDown className="w-4 h-4 text-rose-500" />
               <span>واحدهای دارای بیشترین بدهی</span>
             </h3>
             <button
               onClick={() => onNavigate?.('units')}
-              className="text-xs text-brand-400 hover:text-brand-300 font-medium cursor-pointer"
+              className="text-xs text-brand-600 hover:text-brand-700 font-semibold cursor-pointer"
             >
               مشاهده همه
             </button>
           </div>
 
           {debtors.length === 0 ? (
-            <p className="text-xs text-slate-500 py-6 text-center">خوشبختانه واحد بدهکاری وجود ندارد</p>
+            <p className="text-xs text-stone-400 py-6 text-center">خوشبختانه واحد بدهکاری وجود ندارد</p>
           ) : (
             <div className="space-y-2">
-              {debtors.map((d: any) => (
+              {debtors.map((d: any, idx: number) => (
                 <div
-                  key={d.id}
-                  onClick={() => onSelectUnit?.(d.id)}
-                  className="flex items-center justify-between rounded-xl bg-slate-950/60 p-3 hover:bg-slate-800/40 transition-colors cursor-pointer border border-slate-800/60"
+                  key={d.id || d.unitId || `debtor-${d.unitNumber || idx}`}
+                  onClick={() => onSelectUnit?.(d.id || d.unitId)}
+                  className="flex items-center justify-between rounded-xl bg-stone-50 p-3 hover:bg-stone-100/80 transition-colors cursor-pointer border border-stone-200/60"
                 >
                   <div className="flex items-center gap-2.5">
-                    <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-rose-500/10 text-rose-400 font-bold text-xs">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-rose-50 text-rose-600 font-bold text-xs border border-rose-200">
                       {toFaDigit(d.unitNumber)}
                     </span>
                     <div>
-                      <h4 className="text-xs font-bold text-slate-200">
+                      <h4 className="text-xs font-bold text-stone-800">
                         واحد {toFaDigit(d.unitNumber)} {d.unitName ? `(${d.unitName})` : ''}
                       </h4>
-                      <p className="text-[10px] text-slate-400">
-                        {d.residents?.[0]?.fullName || 'ساکن ثبت نشده'}
+                      <p className="text-[10px] text-stone-500">
+                        {d.residentName || d.residents?.[0]?.fullName || 'ساکن ثبت نشده'}
                       </p>
                     </div>
                   </div>
-                  <span className="font-mono text-xs font-bold text-rose-400 num-tabular">
-                    +{formatToman(d.currentBalance)} تومان
+                  <span className="font-sans text-xs font-bold text-rose-600 num-tabular">
+                    +{formatToman(Math.abs(d.balance ?? d.currentBalance ?? 0))} تومان
                   </span>
                 </div>
               ))}
@@ -296,51 +296,51 @@ export const DashboardPage: React.FC<{
         </div>
 
         {/* Recent Ledger Transactions */}
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-5 shadow-glass space-y-3">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-            <h3 className="text-sm font-bold text-slate-100 flex items-center gap-2">
-              <TrendingUp className="w-4 h-4 text-emerald-400" />
+        <div className="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm space-y-3">
+          <div className="flex items-center justify-between border-b border-stone-100 pb-3">
+            <h3 className="text-sm font-bold text-stone-800 flex items-center gap-2">
+              <TrendingUp className="w-4 h-4 text-emerald-600" />
               <span>آخرین تراکنش‌های ثبتی معین</span>
             </h3>
             <button
               onClick={() => onNavigate?.('ledger')}
-              className="text-xs text-brand-400 hover:text-brand-300 font-medium cursor-pointer"
+              className="text-xs text-brand-600 hover:text-brand-700 font-semibold cursor-pointer"
             >
               مشاهده دفترچه
             </button>
           </div>
 
           {recentTransactions.length === 0 ? (
-            <p className="text-xs text-slate-500 py-6 text-center">تراکنشی برای نمایش ثبت نشده است</p>
+            <p className="text-xs text-stone-400 py-6 text-center">تراکنشی برای نمایش ثبت نشده است</p>
           ) : (
             <div className="space-y-2">
-              {recentTransactions.map((tx: any) => (
+              {recentTransactions.map((tx: any, idx: number) => (
                 <div
-                  key={tx.id}
-                  className="flex items-center justify-between rounded-xl bg-slate-950/60 p-3 border border-slate-800/60"
+                  key={tx.id || `tx-${idx}`}
+                  className="flex items-center justify-between rounded-xl bg-stone-50 p-3 border border-stone-200/60"
                 >
                   <div className="flex items-center gap-2.5">
                     <span
-                      className={`flex h-8 w-8 items-center justify-center rounded-lg font-bold text-xs ${
+                      className={`flex h-8 w-8 items-center justify-center rounded-lg font-bold text-xs border ${
                         tx.type === 'PAYMENT'
-                          ? 'bg-emerald-500/10 text-emerald-400'
-                          : 'bg-rose-500/10 text-rose-400'
+                          ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                          : 'bg-rose-50 text-rose-700 border-rose-200'
                       }`}
                     >
                       {tx.type === 'PAYMENT' ? 'واریز' : 'بدهی'}
                     </span>
                     <div>
-                      <h4 className="text-xs font-bold text-slate-200">
+                      <h4 className="text-xs font-bold text-stone-800">
                         {tx.description || (tx.type === 'PAYMENT' ? 'پرداخت شارژ' : 'ثبت بدهی دوره')}
                       </h4>
-                      <p className="text-[10px] text-slate-400">
+                      <p className="text-[10px] text-stone-500">
                         {formatJalaliDateTime(tx.date || tx.createdAt)}
                       </p>
                     </div>
                   </div>
                   <span
-                    className={`font-mono text-xs font-bold num-tabular ${
-                      tx.type === 'PAYMENT' ? 'text-emerald-400' : 'text-slate-300'
+                    className={`font-sans text-xs font-bold num-tabular ${
+                      tx.type === 'PAYMENT' ? 'text-emerald-600' : 'text-stone-700'
                     }`}
                   >
                     {formatToman(tx.amount)} تومان

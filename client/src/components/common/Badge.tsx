@@ -15,12 +15,12 @@ export const Badge: React.FC<BadgeProps> = ({
   className
 }) => {
   const variantStyles = {
-    emerald: 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30',
-    rose: 'bg-rose-500/15 text-rose-400 border border-rose-500/30',
-    amber: 'bg-amber-500/15 text-amber-400 border border-amber-500/30',
-    brand: 'bg-brand-500/15 text-brand-400 border border-brand-500/30',
-    slate: 'bg-slate-800 text-slate-300 border border-slate-700',
-    outline: 'bg-transparent text-slate-300 border border-slate-700'
+    emerald: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+    rose: 'bg-rose-50 text-rose-700 border border-rose-200',
+    amber: 'bg-amber-50 text-amber-700 border border-amber-200',
+    brand: 'bg-brand-50 text-brand-700 border border-brand-200',
+    slate: 'bg-stone-100 text-stone-700 border border-stone-200',
+    outline: 'bg-transparent text-stone-600 border border-stone-200'
   };
 
   const sizeStyles = {

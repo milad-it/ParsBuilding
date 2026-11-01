@@ -26,44 +26,49 @@ export const StatCard: React.FC<StatCardProps> = ({
   className
 }) => {
   const colorMap = {
-    brand: 'border-brand-500/30 hover:border-brand-500/60 shadow-glow-brand/10',
-    emerald: 'border-emerald-500/30 hover:border-emerald-500/60 shadow-glow-emerald/10',
-    rose: 'border-rose-500/30 hover:border-rose-500/60 shadow-glow-rose/10',
-    amber: 'border-amber-500/30 hover:border-amber-500/60',
-    slate: 'border-slate-800 hover:border-slate-700'
+    brand: 'border-brand-200/90 hover:border-brand-300',
+    emerald: 'border-emerald-200/90 hover:border-emerald-300',
+    rose: 'border-rose-200/90 hover:border-rose-300',
+    amber: 'border-amber-200/90 hover:border-amber-300',
+    slate: 'border-stone-200 hover:border-stone-300'
   };
 
   const iconBgMap = {
-    brand: 'bg-brand-500/10 text-brand-400',
-    emerald: 'bg-emerald-500/10 text-emerald-400',
-    rose: 'bg-rose-500/10 text-rose-400',
-    amber: 'bg-amber-500/10 text-amber-400',
-    slate: 'bg-slate-800 text-slate-300'
+    brand: 'bg-brand-50 text-brand-700 border border-brand-200/60',
+    emerald: 'bg-emerald-50 text-emerald-700 border border-emerald-200/60',
+    rose: 'bg-rose-50 text-rose-700 border border-rose-200/60',
+    amber: 'bg-amber-50 text-amber-700 border border-amber-200/60',
+    slate: 'bg-stone-100 text-stone-700 border border-stone-200'
   };
 
   return (
     <div
       dir="rtl"
       className={cn(
-        'relative rounded-2xl bg-slate-900/80 backdrop-blur-md p-5 border transition-all duration-300 hover:-translate-y-0.5 shadow-glass',
+        'relative rounded-2xl bg-white p-5 border transition-all duration-300 hover:-translate-y-0.5 shadow-sm',
         colorMap[color],
         className
       )}
     >
       <div className="flex items-center justify-between">
-        <span className="text-xs font-medium text-slate-400">{title}</span>
+        <span className="text-xs font-semibold text-stone-600">{title}</span>
         {icon && <div className={cn('p-2.5 rounded-xl', iconBgMap[color])}>{icon}</div>}
       </div>
       <div className="mt-3 flex items-baseline gap-1.5">
-        <span className="font-mono text-2xl lg:text-3xl font-black text-slate-100 num-tabular tracking-tight">
+        <span className="font-sans text-2xl lg:text-3xl font-black text-stone-900 tracking-tight">
           {value}
         </span>
-        {unit && <span className="text-xs font-normal text-slate-400">{unit}</span>}
+        {unit && <span className="text-xs font-bold text-stone-400 select-none">{unit}</span>}
       </div>
-      <div className="mt-2 flex items-center justify-between text-xs">
-        {subtitle && <span className="text-slate-400">{subtitle}</span>}
+      <div className="mt-2 flex items-center justify-between text-xs pt-2 border-t border-stone-100">
+        {subtitle && <span className="text-stone-400 text-[11px] font-medium">{subtitle}</span>}
         {trend && (
-          <span className={cn('font-bold num-tabular', trend.isPositive ? 'text-emerald-400' : 'text-rose-400')}>
+          <span
+            className={cn(
+              'font-bold text-[10px] px-2 py-0.5 rounded-md',
+              trend.isPositive ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'
+            )}
+          >
             {trend.value}
           </span>
         )}

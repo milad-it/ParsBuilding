@@ -15,7 +15,10 @@ export const toFaDigit = (s: string | number | null | undefined): string => {
 
 export function formatToman(amount: number | null | undefined): string {
   if (amount === null || amount === undefined || isNaN(amount) || amount === 0) return '۰';
-  return toFaDigit(Math.round(amount).toLocaleString('fa-IR'));
+  const isNegative = amount < 0;
+  const absStr = Math.abs(Math.round(amount)).toLocaleString('en-US').replace(/,/g, '٬');
+  const faDigits = toFaDigit(absStr);
+  return isNegative ? `-${faDigits}` : faDigits;
 }
 
 export function parsePersianNumber(str: string | number | null | undefined): number {

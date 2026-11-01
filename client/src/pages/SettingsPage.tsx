@@ -76,18 +76,18 @@ export const SettingsPage: React.FC = () => {
     <div dir="rtl" className="max-w-3xl space-y-6">
       {/* Header */}
       <div>
-        <h2 className="text-xl font-black text-white flex items-center gap-2">
-          <Settings className="w-6 h-6 text-brand-400" />
+        <h2 className="text-xl font-black text-stone-900 flex items-center gap-2">
+          <Settings className="w-6 h-6 text-brand-600" />
           <span>تنظیمات مجتمع و همگام‌سازی اطلاعات</span>
         </h2>
-        <p className="text-xs text-slate-400 mt-1">
+        <p className="text-xs text-stone-500 mt-1">
           تنظیمات نام ساختمان، موجودی اولیه صندوق و پل مهاجرت داده‌های نسخه‌های پیشین
         </p>
       </div>
 
       {/* Building Profile Form */}
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-6 shadow-glass space-y-4">
-        <h3 className="text-sm font-bold text-slate-100 border-b border-slate-800 pb-3">
+      <div className="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm space-y-4">
+        <h3 className="text-sm font-bold text-stone-800 border-b border-stone-100 pb-3">
           مشخصات کلی ساختمان
         </h3>
 
@@ -112,7 +112,7 @@ export const SettingsPage: React.FC = () => {
             helperText="موجودی تنخواه‌گردان ثبت‌شده در اساسنامه ساختمان"
           />
 
-          <div className="flex justify-end pt-3 border-t border-slate-800">
+          <div className="flex justify-end pt-3 border-t border-stone-200">
             <Button type="submit" variant="primary" isLoading={isSaving}>
               ذخیره تغییرات
             </Button>
@@ -121,20 +121,20 @@ export const SettingsPage: React.FC = () => {
       </div>
 
       {/* Migration Bridge Box */}
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-6 shadow-glass space-y-3">
+      <div className="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm space-y-3">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-400">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-50 text-brand-700 border border-brand-200">
             <Database className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-sm font-bold text-slate-100">پل مهاجرت اطلاعات محلی (IndexedDB / LocalStorage)</h3>
-            <p className="text-xs text-slate-400">
+            <h3 className="text-sm font-bold text-stone-800">پل مهاجرت اطلاعات محلی (IndexedDB / LocalStorage)</h3>
+            <p className="text-xs text-stone-500">
               انتقال خودکار سوابق مالی، دوره‌ها و واحدها از نسخه آفلاین قدیمی به پایگاه‌داده چندمستأجره ابری
             </p>
           </div>
         </div>
 
-        <div className="rounded-xl bg-slate-950 p-4 border border-slate-800 text-xs text-slate-300 leading-relaxed">
+        <div className="rounded-xl bg-stone-50 p-4 border border-stone-200 text-xs text-stone-600 leading-relaxed">
           پل مهاجرت تمامی کلیدهای ذخیره‌سازی محلی قبلی را اعتبارسنجی نموده و بدون هیچ‌گونه حذف اطلاعات قبلی، آنها را با سرور ابری PostgreSQL تجمیع می‌کند.
         </div>
 
@@ -143,7 +143,7 @@ export const SettingsPage: React.FC = () => {
             variant="secondary"
             onClick={handleRunMigration}
             isLoading={isMigrating}
-            iconStart={<Upload className="w-4 h-4 text-brand-400" />}
+            iconStart={<Upload className="w-4 h-4 text-brand-600" />}
           >
             آغاز همگام‌سازی و مهاجرت داده‌ها
           </Button>

@@ -55,7 +55,7 @@ export const LedgerPage: React.FC = () => {
       key: 'date',
       header: 'تاریخ و زمان',
       render: (tx) => (
-        <span className="text-xs text-slate-300 num-tabular">
+        <span className="text-xs text-stone-500 num-tabular">
           {formatJalaliDateTime(tx.date || tx.createdAt)}
         </span>
       )
@@ -66,7 +66,7 @@ export const LedgerPage: React.FC = () => {
       render: (tx) => {
         const u = units.find((x) => x.id === tx.unitId);
         return (
-          <span className="font-bold text-slate-200">
+          <span className="font-bold text-stone-800">
             {u ? `واحد ${toFaDigit(u.unitNumber)}` : 'صندوق مجتمع'}
           </span>
         );
@@ -77,9 +77,9 @@ export const LedgerPage: React.FC = () => {
       header: 'شرح تراکنش',
       render: (tx) => (
         <div>
-          <span className="font-semibold text-slate-200">{tx.description || '-'}</span>
+          <span className="font-semibold text-stone-800">{tx.description || '-'}</span>
           {tx.referenceNumber && (
-            <p className="text-[10px] font-mono text-slate-500">سند: {tx.referenceNumber}</p>
+            <p className="text-[10px] font-mono text-stone-500">سند: {tx.referenceNumber}</p>
           )}
         </div>
       )
@@ -100,8 +100,8 @@ export const LedgerPage: React.FC = () => {
       align: 'center',
       render: (tx) => (
         <span
-          className={`font-mono font-bold text-sm num-tabular ${
-            tx.type === 'PAYMENT' ? 'text-emerald-400' : 'text-rose-400'
+          className={`font-sans font-bold text-sm num-tabular ${
+            tx.type === 'PAYMENT' ? 'text-emerald-600' : 'text-rose-600'
           }`}
         >
           {tx.type === 'PAYMENT' ? '+' : '-'}{formatToman(tx.amount)} تومان
@@ -114,8 +114,8 @@ export const LedgerPage: React.FC = () => {
     <div dir="rtl" className="space-y-6">
       {/* Header */}
       <div>
-        <h2 className="text-xl font-black text-white">دفتر کل و معین مالی ساختمان</h2>
-        <p className="text-xs text-slate-400 mt-1">
+        <h2 className="text-xl font-black text-stone-900">دفتر کل و معین مالی ساختمان</h2>
+        <p className="text-xs text-stone-500 mt-1">
           ثبت کلیه بدهکاری‌ها، بستانکاری‌ها و اسناد مالی مجتمع بر اساس استانداردهای دوبل
         </p>
       </div>
@@ -153,13 +153,13 @@ export const LedgerPage: React.FC = () => {
       </div>
 
       {/* Filter Toolbar */}
-      <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-slate-800 bg-slate-900/60 p-3">
-        <div className="flex items-center gap-2 text-xs text-slate-300">
+      <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-stone-200 bg-white p-3 shadow-sm">
+        <div className="flex items-center gap-2 text-xs text-stone-700">
           <span>فیلتر بر اساس واحد:</span>
           <select
             value={selectedUnitId}
             onChange={(e) => setSelectedUnitId(e.target.value)}
-            className="rounded-lg border border-slate-700 bg-slate-950 px-2.5 py-1 text-xs text-slate-200 focus:outline-none"
+            className="rounded-lg border border-stone-300 bg-stone-50 px-2.5 py-1 text-xs text-stone-800 focus:outline-none focus:border-brand-600"
           >
             <option value="ALL">همه واحدها</option>
             {units.map((u) => (
@@ -170,12 +170,12 @@ export const LedgerPage: React.FC = () => {
           </select>
         </div>
 
-        <div className="flex items-center gap-2 text-xs text-slate-300">
+        <div className="flex items-center gap-2 text-xs text-stone-700">
           <span>نوع سند:</span>
           <select
             value={txTypeFilter}
             onChange={(e: any) => setTxTypeFilter(e.target.value)}
-            className="rounded-lg border border-slate-700 bg-slate-950 px-2.5 py-1 text-xs text-slate-200 focus:outline-none"
+            className="rounded-lg border border-stone-300 bg-stone-50 px-2.5 py-1 text-xs text-stone-800 focus:outline-none focus:border-brand-600"
           >
             <option value="ALL">کلیه اسناد</option>
             <option value="PAYMENT">فقط واریزی‌ها</option>

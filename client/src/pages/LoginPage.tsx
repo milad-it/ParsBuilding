@@ -31,16 +31,16 @@ export const LoginPage: React.FC<{ onLoginSuccess?: () => void }> = ({ onLoginSu
   };
 
   return (
-    <div dir="rtl" className="flex min-h-screen w-full bg-slate-950 text-slate-100 font-sans">
+    <div dir="rtl" className="flex min-h-screen w-full bg-stone-100 text-stone-900 font-sans">
       {/* 3D Visual Hero Panel (Desktop) */}
-      <div className="hidden lg:relative lg:flex lg:flex-1 lg:flex-col lg:justify-between bg-slate-900 border-e border-slate-800 p-8 overflow-hidden">
+      <div className="hidden lg:relative lg:flex lg:flex-1 lg:flex-col lg:justify-between bg-stone-900 border-e border-stone-800 p-8 overflow-hidden">
         <div className="relative z-10 flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-tr from-brand-600 to-indigo-500 text-white shadow-glow-brand">
+          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-600 text-white shadow-lg shadow-brand-600/30">
             <Building2 className="w-6 h-6" />
           </div>
           <div>
             <h2 className="text-base font-black text-white">پارس بیلدینگ</h2>
-            <p className="text-xs text-brand-400">سامانه جامع مدیریت هوشمند مجتمع‌های مسکونی</p>
+            <p className="text-xs text-brand-300">سامانه جامع مدیریت هوشمند مجتمع‌های مسکونی</p>
           </div>
         </div>
 
@@ -49,32 +49,32 @@ export const LoginPage: React.FC<{ onLoginSuccess?: () => void }> = ({ onLoginSu
           <Building3DHero />
         </div>
 
-        <div className="relative z-10 rounded-2xl border border-slate-800/80 bg-slate-950/70 p-4 backdrop-blur-md max-w-sm">
-          <p className="text-xs text-slate-300 leading-relaxed">
+        <div className="relative z-10 rounded-2xl border border-stone-700/80 bg-stone-950/70 p-4 backdrop-blur-md max-w-sm">
+          <p className="text-xs text-stone-300 leading-relaxed">
             محاسبه دقیق شارژ، تطبیق قانون تملک آپارتمان‌ها، تراز معین مالی و ارتباط زنده با ساکنین.
           </p>
         </div>
       </div>
 
       {/* Login Form Panel */}
-      <div className="flex flex-1 flex-col justify-center px-6 py-12 sm:px-12 lg:flex-none lg:w-[480px]">
+      <div className="flex flex-1 flex-col justify-center px-6 py-12 sm:px-12 lg:flex-none lg:w-[480px] bg-white border-s border-stone-200 shadow-xl">
         <div className="mx-auto w-full max-w-sm space-y-6">
           <div className="text-right space-y-2">
             <div className="flex lg:hidden items-center gap-2 mb-4">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-600 text-white">
                 <Building2 className="w-5 h-5" />
               </div>
-              <span className="text-sm font-bold text-white">پارس بیلدینگ</span>
+              <span className="text-sm font-bold text-stone-900">پارس بیلدینگ</span>
             </div>
-            <h1 className="text-2xl font-black text-white">ورود به سامانه</h1>
-            <p className="text-xs text-slate-400">
+            <h1 className="text-2xl font-black text-stone-900">ورود به سامانه</h1>
+            <p className="text-xs text-stone-500">
               جهت دسترسی به داشبورد مدیریت یا پرتال ساکنین وارد حساب خود شوید
             </p>
           </div>
 
           {(error || validationError) && (
-            <div className="flex items-center gap-2 rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-300">
-              <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
+            <div className="flex items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs text-rose-700">
+              <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
               <span>{validationError || error}</span>
             </div>
           )}
@@ -114,9 +114,9 @@ export const LoginPage: React.FC<{ onLoginSuccess?: () => void }> = ({ onLoginSu
           </form>
 
           <div className="relative flex py-1 items-center">
-            <div className="flex-grow border-t border-slate-800"></div>
-            <span className="flex-shrink mx-3 text-xs text-slate-500">یا ورود سریع پیش‌نمایش</span>
-            <div className="flex-grow border-t border-slate-800"></div>
+            <div className="flex-grow border-t border-stone-200"></div>
+            <span className="flex-shrink mx-3 text-xs text-stone-400">یا ورود سریع پیش‌نمایش</span>
+            <div className="flex-grow border-t border-stone-200"></div>
           </div>
 
           <div className="grid grid-cols-2 gap-2">
@@ -128,7 +128,7 @@ export const LoginPage: React.FC<{ onLoginSuccess?: () => void }> = ({ onLoginSu
                 loginDemo('COMPLEX_MANAGER');
                 if (onLoginSuccess) onLoginSuccess();
               }}
-              className="w-full text-xs hover:border-brand-500 hover:text-brand-300"
+              className="w-full text-xs hover:border-brand-600 hover:text-brand-700"
             >
               🏢 ورود مدیر ساختمان
             </Button>
@@ -140,14 +140,14 @@ export const LoginPage: React.FC<{ onLoginSuccess?: () => void }> = ({ onLoginSu
                 loginDemo('RESIDENT');
                 if (onLoginSuccess) onLoginSuccess();
               }}
-              className="w-full text-xs hover:border-indigo-500 hover:text-indigo-300"
+              className="w-full text-xs hover:border-brand-600 hover:text-brand-700"
             >
               🔑 ورود ساکن (واحد ۵)
             </Button>
           </div>
 
-          <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-3 text-center text-xs text-slate-400">
-            حساب پیش‌فرض مدیر: <span className="font-mono text-slate-200">09123456789</span> / <span className="font-mono text-slate-200">password123</span>
+          <div className="rounded-xl border border-stone-200 bg-stone-50 p-3 text-center text-xs text-stone-600">
+            حساب پیش‌فرض مدیر: <span className="font-mono font-bold text-stone-800">09123456789</span> / <span className="font-mono font-bold text-stone-800">password123</span>
           </div>
         </div>
       </div>

@@ -173,8 +173,8 @@ export const PeriodsPage: React.FC = () => {
       render: (p) => {
         if (p.status === 'ACTIVE') {
           return (
-            <Badge variant="emerald" size="md">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <Badge variant="brand" size="md">
+              <span className="h-1.5 w-1.5 rounded-full bg-brand-500 animate-pulse" />
               فعال (در حال وصول)
             </Badge>
           );
@@ -188,7 +188,7 @@ export const PeriodsPage: React.FC = () => {
         }
         return (
           <Badge variant="amber" size="md">
-            پیش‌نویس (DRAFT)
+            پیش‌نویس
           </Badge>
         );
       }
@@ -198,7 +198,7 @@ export const PeriodsPage: React.FC = () => {
       header: 'مجموع هزینه‌ها',
       align: 'center',
       render: (p) => (
-        <span className="font-mono font-bold text-slate-200 num-tabular">
+        <span className="font-sans font-bold text-stone-900 num-tabular">
           {formatToman(p.totalExpenseAmount)} تومان
         </span>
       )
@@ -208,7 +208,7 @@ export const PeriodsPage: React.FC = () => {
       header: 'تاریخ ایجاد',
       align: 'center',
       render: (p) => (
-        <span className="text-xs text-slate-400 num-tabular">
+        <span className="text-xs text-stone-500 num-tabular">
           {formatJalaliDateTime(p.createdAt)}
         </span>
       )
@@ -231,7 +231,7 @@ export const PeriodsPage: React.FC = () => {
               </Button>
               <button
                 onClick={() => handleDeletePeriod(p.id)}
-                className="rounded-lg p-1.5 text-rose-400 hover:bg-rose-500/10 transition-colors"
+                className="rounded-lg p-1.5 text-rose-500 hover:bg-rose-50 transition-colors"
                 title="حذف پیش‌نویس"
               >
                 <Trash2 className="w-4 h-4" />
@@ -251,7 +251,7 @@ export const PeriodsPage: React.FC = () => {
               </Button>
               <button
                 onClick={() => handleOpenPreview(p)}
-                className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-800 transition-colors"
+                className="rounded-lg p-1.5 text-stone-500 hover:bg-stone-100 transition-colors"
                 title="مشاهده جدول تسهیم"
               >
                 <Eye className="w-4 h-4" />
@@ -262,7 +262,7 @@ export const PeriodsPage: React.FC = () => {
           {p.status === 'CLOSED' && (
             <button
               onClick={() => handleOpenPreview(p)}
-              className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-800 transition-colors"
+              className="rounded-lg p-1.5 text-stone-500 hover:bg-stone-100 transition-colors"
               title="مشاهده جزئیات دوره بسته شده"
             >
               <Eye className="w-4 h-4" />
@@ -278,8 +278,8 @@ export const PeriodsPage: React.FC = () => {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-black text-white">مدیریت دوره‌ها و تسهیم شارژ</h2>
-          <p className="text-xs text-slate-400 mt-1">
+          <h2 className="text-xl font-black text-stone-900">مدیریت دوره‌ها و تسهیم شارژ</h2>
+          <p className="text-xs text-stone-500 mt-1">
             ورود قبوض، فرمول‌های ماده ۴ قانون تملک آپارتمان‌ها و پیش‌نمایش دقیق تسهیم
           </p>
         </div>
@@ -321,11 +321,11 @@ export const PeriodsPage: React.FC = () => {
               required
             />
             <div className="space-y-1.5 text-right">
-              <label className="block text-xs font-medium text-slate-300">نوع دوره</label>
+              <label className="block text-xs font-semibold text-stone-700">نوع دوره</label>
               <select
                 value={periodType}
                 onChange={(e: any) => setPeriodType(e.target.value)}
-                className="w-full rounded-xl border border-slate-700/80 bg-slate-900/80 px-3 py-2 text-xs font-medium text-slate-200 focus:outline-none focus:border-brand-500"
+                className="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 text-xs font-semibold text-stone-800 focus:outline-none focus:border-brand-600 focus:ring-2 focus:ring-brand-500/15"
               >
                 <option value="MONTHLY">ماهانه عادی</option>
                 <option value="EMERGENCY">اضطراری / پروژه‌ای</option>
@@ -334,8 +334,8 @@ export const PeriodsPage: React.FC = () => {
             </div>
           </div>
 
-          <div className="border-t border-slate-800 pt-3">
-            <h4 className="text-xs font-bold text-slate-200 mb-3">ریز مبالغ فاکتورها و قبوض:</h4>
+          <div className="border-t border-stone-200 pt-3">
+            <h4 className="text-xs font-bold text-stone-800 mb-3">ریز مبالغ فاکتورها و قبوض:</h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <MoneyInput
                 label="شارژ ثابت پایه (تقسیم مساوی بین واحدها)"
@@ -383,23 +383,23 @@ export const PeriodsPage: React.FC = () => {
           </div>
 
           {/* Rounding settings */}
-          <div className="rounded-xl bg-slate-950 p-3 border border-slate-800 flex items-center justify-between">
+          <div className="rounded-xl bg-stone-50 p-3 border border-stone-200 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <input
                 type="checkbox"
                 id="roundUp"
                 checked={roundUp}
                 onChange={(e) => setRoundUp(e.target.checked)}
-                className="h-4 w-4 rounded border-slate-700 bg-slate-900 text-brand-600 focus:ring-brand-500"
+                className="h-4 w-4 rounded border-stone-300 bg-white text-brand-600 focus:ring-brand-500"
               />
-              <label htmlFor="roundUp" className="text-xs text-slate-200 cursor-pointer">
+              <label htmlFor="roundUp" className="text-xs text-stone-700 font-medium cursor-pointer">
                 گرد کردن محاسباتی به سمت بالا (الگوریتم بزرگترین باقیمانده برای صفر شدن انحراف)
               </label>
             </div>
-            <span className="text-xs text-slate-400 font-mono">گام: ۵۰,۰۰۰ تومان</span>
+            <span className="text-xs text-stone-500 font-sans">گام: ۵۰,۰۰۰ تومان</span>
           </div>
 
-          <div className="flex justify-end gap-2 pt-3 border-t border-slate-800">
+          <div className="flex justify-end gap-2 pt-3 border-t border-stone-200">
             <Button type="button" variant="outline" onClick={() => setIsCreateModalOpen(false)}>
               انصراف
             </Button>
@@ -419,29 +419,29 @@ export const PeriodsPage: React.FC = () => {
         size="2xl"
       >
         {isPreviewLoading ? (
-          <div className="py-16 text-center text-xs text-slate-400">
+          <div className="py-16 text-center text-xs text-stone-400">
             در حال محاسبه الگوریتم تسهیم و توزیع باقیمانده...
           </div>
         ) : previewResult ? (
           <div className="space-y-4">
             {/* Conservation Verification Header */}
-            <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/30 p-3 flex flex-wrap items-center justify-between gap-2 text-xs">
-              <div className="flex items-center gap-2 text-emerald-300">
-                <CheckCircle2 className="w-4 h-4" />
+            <div className="rounded-xl bg-emerald-50 border border-emerald-200 p-3 flex flex-wrap items-center justify-between gap-2 text-xs">
+              <div className="flex items-center gap-2 text-emerald-800">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                 <span className="font-bold">
                   انحراف محاسباتی: {previewResult.conservationDelta === 0 ? '۰ تومان (تطبیق ۱۰۰٪ دقیق)' : previewResult.conservationDelta}
                 </span>
               </div>
-              <div className="flex items-center gap-4 text-slate-300 font-mono num-tabular">
+              <div className="flex items-center gap-4 text-stone-700 font-sans num-tabular">
                 <span>کل ورودی فاکتورها: {formatToman(previewResult.totalInputExpenses)} تومان</span>
                 <span>کل شارژ تسهیم‌شده: {formatToman(previewResult.totalDistributed)} تومان</span>
               </div>
             </div>
 
             {/* Matrix Table */}
-            <div className="overflow-x-auto max-h-80 border border-slate-800 rounded-xl">
+            <div className="overflow-x-auto max-h-80 border border-stone-200 rounded-xl">
               <table className="w-full text-right text-xs">
-                <thead className="bg-slate-950 text-slate-400 sticky top-0 border-b border-slate-800">
+                <thead className="bg-stone-50 text-stone-600 sticky top-0 border-b border-stone-200 font-semibold">
                   <tr>
                     <th className="p-2.5">واحد</th>
                     <th className="p-2.5">ثابت</th>
@@ -452,13 +452,13 @@ export const PeriodsPage: React.FC = () => {
                     <th className="p-2.5">متراژی (ماده ۴)</th>
                     <th className="p-2.5">پروژه خاص</th>
                     <th className="p-2.5">تعدیل رند</th>
-                    <th className="p-2.5 font-bold text-slate-200">سهم نهایی</th>
+                    <th className="p-2.5 font-bold text-stone-900">سهم نهایی</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/60 font-mono num-tabular text-slate-300">
+                <tbody className="divide-y divide-stone-100 font-sans num-tabular text-stone-700">
                   {(previewResult.charges || []).map((c: any) => (
-                    <tr key={c.unitId} className="hover:bg-slate-800/30">
-                      <td className="p-2.5 font-bold text-white">واحد {toFaDigit(c.unitNumber)}</td>
+                    <tr key={c.unitId} className="hover:bg-stone-50">
+                      <td className="p-2.5 font-bold text-stone-900">واحد {toFaDigit(c.unitNumber)}</td>
                       <td className="p-2.5">{formatToman(c.fixed)}</td>
                       <td className="p-2.5">{formatToman(c.water)}</td>
                       <td className="p-2.5">{formatToman(c.gas)}</td>
@@ -466,10 +466,10 @@ export const PeriodsPage: React.FC = () => {
                       <td className="p-2.5">{formatToman(c.incidental)}</td>
                       <td className="p-2.5">{formatToman(c.areaShare)}</td>
                       <td className="p-2.5">{formatToman(c.specialShare)}</td>
-                      <td className="p-2.5 text-slate-500">
+                      <td className="p-2.5 text-stone-400">
                         {c.roundingDelta > 0 ? `+${c.roundingDelta}` : c.roundingDelta}
                       </td>
-                      <td className="p-2.5 font-bold text-brand-300">
+                      <td className="p-2.5 font-bold text-brand-700">
                         {formatToman(c.totalCharge)} تومان
                       </td>
                     </tr>
@@ -479,7 +479,7 @@ export const PeriodsPage: React.FC = () => {
             </div>
 
             {/* Modal Actions */}
-            <div className="flex justify-between items-center pt-3 border-t border-slate-800">
+            <div className="flex justify-between items-center pt-3 border-t border-stone-200">
               <Button variant="outline" onClick={() => setPreviewPeriod(null)}>
                 بستن
               </Button>

@@ -95,6 +95,74 @@ apiClient.interceptors.request.use(
     const token = tokenStorage.getAccessToken();
     const complexId = tokenStorage.getActiveComplexId();
 
+    // If active session is in local preview/demo mode, resolve cleanly without firing failed backend requests
+    if (token === 'demo-jwt-token-active') {
+      config.adapter = async (cfg) => {
+        const url = cfg.url || '';
+        let data: any = {};
+        if (url.includes('/treasury')) {
+          data = { currentFund: 48500000 };
+        } else if (url.includes('/balance-sheet')) {
+          data = { totalDebts: 2480000, totalCredits: 420000 };
+        } else if (url.includes('/units')) {
+          data = [
+            { id: 'unt-1', unitNumber: 1, floor: 1, area: 95, occupants: 3, currentBalance: 0, isOccupied: true, ownerName: 'رضا کمالی', tenantName: null, hasPackage: true, occupancyType: 'OWNER_OCCUPIED' },
+            { id: 'unt-2', unitNumber: 2, floor: 1, area: 110, occupants: 4, currentBalance: -450000, isOccupied: true, ownerName: 'علی رضایی', tenantName: null, hasPackage: false, occupancyType: 'OWNER_OCCUPIED' },
+            { id: 'unt-3', unitNumber: 3, floor: 2, area: 85, occupants: 2, currentBalance: 120000, isOccupied: true, ownerName: 'محسن کریمی', tenantName: 'صادقی', hasPackage: false, occupancyType: 'TENANT' },
+            { id: 'unt-4', unitNumber: 4, floor: 2, area: 120, occupants: 4, currentBalance: 0, isOccupied: true, ownerName: 'مریم نوری', tenantName: null, hasPackage: true, occupancyType: 'OWNER_OCCUPIED' },
+            { id: 'unt-5', unitNumber: 5, floor: 3, area: 105, occupants: 3, currentBalance: -680000, isOccupied: true, ownerName: 'حسین احمدی', tenantName: null, hasPackage: true, occupancyType: 'OWNER_OCCUPIED' },
+            { id: 'unt-6', unitNumber: 6, floor: 3, area: 90, occupants: 2, currentBalance: 0, isOccupied: false, ownerName: 'فرهاد طاهری', tenantName: null, hasPackage: false, occupancyType: 'VACANT' },
+            { id: 'unt-7', unitNumber: 7, floor: 4, area: 115, occupants: 3, currentBalance: -250000, isOccupied: true, ownerName: 'جعفر مرادی', tenantName: null, hasPackage: false, occupancyType: 'OWNER_OCCUPIED' },
+            { id: 'unt-8', unitNumber: 8, floor: 4, area: 130, occupants: 5, currentBalance: 300000, isOccupied: true, ownerName: 'سعید باقری', tenantName: null, hasPackage: true, occupancyType: 'OWNER_OCCUPIED' },
+            { id: 'unt-9', unitNumber: 9, floor: 5, area: 140, occupants: 4, currentBalance: 0, isOccupied: true, ownerName: 'امیر ابراهیمی', tenantName: null, hasPackage: true, occupancyType: 'OWNER_OCCUPIED' },
+            { id: 'unt-10', unitNumber: 10, floor: 5, area: 150, occupants: 4, currentBalance: -1100000, isOccupied: true, ownerName: 'کیوان رحیمی', tenantName: null, hasPackage: true, occupancyType: 'OWNER_OCCUPIED' }
+          ];
+        } else if (url.includes('/periods')) {
+          data = [
+            { id: 'prd-demo-1', name: 'شارژ و هزینه‌های آبان ۱۴۰۳', totalExpenseAmount: 8500000, totalCollectedAmount: 6020000, status: 'ACTIVE' }
+          ];
+        } else if (url.includes('/debtors')) {
+          data = [
+            { unitId: 'unt-10', unitNumber: 10, residentName: 'کیوان رحیمی', balance: -1100000 },
+            { unitId: 'unt-5', unitNumber: 5, residentName: 'حسین احمدی', balance: -680000 },
+            { unitId: 'unt-2', unitNumber: 2, residentName: 'علی رضایی', balance: -450000 },
+            { unitId: 'unt-7', unitNumber: 7, residentName: 'جعفر مرادی', balance: -250000 }
+          ];
+        } else if (url.includes('/transactions')) {
+          data = [
+            { id: 'tx-1', date: new Date().toISOString(), type: 'PAYMENT', amount: 850000, description: 'واریز شارژ واحد ۱' },
+            { id: 'tx-2', date: new Date(Date.now() - 86400000).toISOString(), type: 'PAYMENT', amount: 680000, description: 'واریز شارژ واحد ۴' },
+            { id: 'tx-3', date: new Date(Date.now() - 172800000).toISOString(), type: 'EXPENSE', amount: 1200000, description: 'هزینه سرویس آسانسور' }
+          ];
+        } else if (url.includes('/announcements')) {
+          data = [
+            { id: 'ann-1', title: 'جلسه مجمع عمومی سالیانه ساختمان', content: 'جلسه مجمع عمومی پنج‌شنبه ساعت ۱۸ در سالن اجتماعات برگزار می‌گردد.', category: 'MEETING', isPinned: true, createdAt: new Date().toISOString() },
+            { id: 'ann-2', title: 'سرویس دوره‌ای آسانسور و تاسیسات', content: 'سرویس‌کار مجاز روز دوشنبه جهت بازرسی فنی در ساختمان حضور خواهد داشت.', category: 'MAINTENANCE', isPinned: false, createdAt: new Date().toISOString() }
+          ];
+        } else if (url.includes('/statement')) {
+          data = {
+            unit: { id: 'unt-5', unitNumber: 5, floor: 3, area: 105, occupants: 3, currentBalance: -680000, ownerName: 'حسین احمدی', hasPackage: true },
+            summary: { currentBalance: -680000, totalDebited: 1850000, totalPaid: 1170000 },
+            charges: [{ id: 'chg-1', periodName: 'شارژ آبان ۱۴۰۳', amount: 850000, paidAmount: 850000, createdAt: new Date().toISOString() }],
+            transactions: [{ id: 'tx-1', amount: 850000, type: 'PAYMENT', date: new Date().toISOString(), description: 'واریز شارژ اینترنتی' }]
+          };
+        } else if (url.includes('/complexes')) {
+          data = { id: 'cpx-demo-pars-001', name: 'برج مسکونی پارس', address: 'تهران، خیابان ولیعصر', initialFund: 48500000 };
+        } else {
+          data = { status: 'ok', success: true };
+        }
+
+        return {
+          data,
+          status: 200,
+          statusText: 'OK',
+          headers: {},
+          config: cfg
+        };
+      };
+      return config;
+    }
+
     if (token && !config.headers.Authorization) {
       config.headers.Authorization = `Bearer ${token}`;
     }

@@ -110,14 +110,14 @@ export const PaymentsPage: React.FC<{
         const u = units.find((x) => x.id === tx.unitId);
         return (
           <div className="flex items-center gap-2">
-            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-400 font-bold text-xs">
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold text-xs">
               {u ? toFaDigit(u.unitNumber) : '-'}
             </span>
             <div>
-              <span className="font-bold text-slate-100">
+              <span className="font-bold text-stone-800">
                 {u ? `واحد ${toFaDigit(u.unitNumber)} ${u.unitName ? `(${u.unitName})` : ''}` : 'واحد نامشخص'}
               </span>
-              <p className="text-[10px] text-slate-400">{tx.description}</p>
+              <p className="text-[10px] text-stone-500">{tx.description}</p>
             </div>
           </div>
         );
@@ -128,7 +128,7 @@ export const PaymentsPage: React.FC<{
       header: 'مبلغ پرداختی',
       align: 'center',
       render: (tx) => (
-        <span className="font-mono font-bold text-emerald-400 text-sm num-tabular">
+        <span className="font-sans font-bold text-emerald-600 text-sm num-tabular">
           +{formatToman(tx.amount)} تومان
         </span>
       )
@@ -154,7 +154,7 @@ export const PaymentsPage: React.FC<{
       header: 'شماره پیگیری / سند',
       align: 'center',
       render: (tx) => (
-        <span className="font-mono text-xs text-slate-400">
+        <span className="font-mono text-xs text-stone-500">
           {tx.referenceNumber || tx.metadata?.referenceNumber || '-'}
         </span>
       )
@@ -164,7 +164,7 @@ export const PaymentsPage: React.FC<{
       header: 'تاریخ و ساعت ثبت',
       align: 'center',
       render: (tx) => (
-        <span className="text-xs text-slate-400 num-tabular">
+        <span className="text-xs text-stone-500 num-tabular">
           {formatJalaliDateTime(tx.date || tx.createdAt)}
         </span>
       )
@@ -176,8 +176,8 @@ export const PaymentsPage: React.FC<{
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-black text-white">ثبت و مدیریت واریزی‌های صندوق</h2>
-          <p className="text-xs text-slate-400 mt-1">
+          <h2 className="text-xl font-black text-stone-900">ثبت و مدیریت واریزی‌های صندوق</h2>
+          <p className="text-xs text-stone-500 mt-1">
             ثبت دریافت نقدی، کارت به کارت یا درگاه اینترنتی و تسویه حساب آنی بدهی واحدها
           </p>
         </div>
@@ -217,11 +217,11 @@ export const PaymentsPage: React.FC<{
       >
         <form onSubmit={handleRecordPayment} className="space-y-4">
           <div className="space-y-1.5 text-right">
-            <label className="block text-xs font-medium text-slate-300">انتخاب واحد</label>
+            <label className="block text-xs font-semibold text-stone-700">انتخاب واحد</label>
             <select
               value={selectedUnitId}
               onChange={(e) => setSelectedUnitId(e.target.value)}
-              className="w-full rounded-xl border border-slate-700/80 bg-slate-900/80 px-3 py-2.5 text-xs font-semibold text-slate-100 focus:outline-none focus:border-brand-500"
+              className="w-full rounded-xl border border-stone-300 bg-white px-3 py-2.5 text-xs font-semibold text-stone-800 focus:outline-none focus:border-brand-600 focus:ring-2 focus:ring-brand-500/15"
               required
             >
               {units.map((u) => (
@@ -244,15 +244,15 @@ export const PaymentsPage: React.FC<{
           />
 
           <div className="space-y-1.5 text-right">
-            <label className="block text-xs font-medium text-slate-300">روش پرداخت</label>
+            <label className="block text-xs font-semibold text-stone-700">روش پرداخت</label>
             <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
                 onClick={() => setPaymentMethod('CARD_TRANSFER')}
                 className={`py-2 px-3 rounded-xl border text-xs font-semibold transition-all cursor-pointer ${
                   paymentMethod === 'CARD_TRANSFER'
-                    ? 'border-brand-500 bg-brand-500/15 text-brand-300'
-                    : 'border-slate-800 bg-slate-900 text-slate-400'
+                    ? 'border-brand-600 bg-brand-50 text-brand-700 shadow-sm'
+                    : 'border-stone-200 bg-stone-50 text-stone-600 hover:bg-stone-100'
                 }`}
               >
                 کارت به کارت / فیش بانکی
@@ -262,8 +262,8 @@ export const PaymentsPage: React.FC<{
                 onClick={() => setPaymentMethod('GATEWAY')}
                 className={`py-2 px-3 rounded-xl border text-xs font-semibold transition-all cursor-pointer ${
                   paymentMethod === 'GATEWAY'
-                    ? 'border-emerald-500 bg-emerald-500/15 text-emerald-300'
-                    : 'border-slate-800 bg-slate-900 text-slate-400'
+                    ? 'border-emerald-600 bg-emerald-50 text-emerald-700 shadow-sm'
+                    : 'border-stone-200 bg-stone-50 text-stone-600 hover:bg-stone-100'
                 }`}
               >
                 درگاه پرداخت آنلاین
@@ -273,8 +273,8 @@ export const PaymentsPage: React.FC<{
                 onClick={() => setPaymentMethod('CASH')}
                 className={`py-2 px-3 rounded-xl border text-xs font-semibold transition-all cursor-pointer ${
                   paymentMethod === 'CASH'
-                    ? 'border-amber-500 bg-amber-500/15 text-amber-300'
-                    : 'border-slate-800 bg-slate-900 text-slate-400'
+                    ? 'border-amber-600 bg-amber-50 text-amber-700 shadow-sm'
+                    : 'border-stone-200 bg-stone-50 text-stone-600 hover:bg-stone-100'
                 }`}
               >
                 وجه نقد دریافتی
@@ -284,8 +284,8 @@ export const PaymentsPage: React.FC<{
                 onClick={() => setPaymentMethod('OFFSET')}
                 className={`py-2 px-3 rounded-xl border text-xs font-semibold transition-all cursor-pointer ${
                   paymentMethod === 'OFFSET'
-                    ? 'border-slate-500 bg-slate-500/15 text-slate-300'
-                    : 'border-slate-800 bg-slate-900 text-slate-400'
+                    ? 'border-stone-400 bg-stone-200 text-stone-800 shadow-sm'
+                    : 'border-stone-200 bg-stone-50 text-stone-600 hover:bg-stone-100'
                 }`}
               >
                 تهاتر / بخشودگی
@@ -307,7 +307,7 @@ export const PaymentsPage: React.FC<{
             placeholder="بابت شارژ ماهانه یا..."
           />
 
-          <div className="flex justify-end gap-2 pt-3 border-t border-slate-800">
+          <div className="flex justify-end gap-2 pt-3 border-t border-stone-200">
             <Button
               type="button"
               variant="outline"

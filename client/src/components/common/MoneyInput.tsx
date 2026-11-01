@@ -34,10 +34,10 @@ export const MoneyInput = forwardRef<HTMLInputElement, MoneyInputProps>(
 
     return (
       <div className="w-full space-y-1.5 text-right" dir="rtl">
-        {label && <label className="block text-xs font-medium text-slate-300">{label}</label>}
+        {label && <label className="block text-xs font-semibold text-stone-700">{label}</label>}
         <div
           className={cn(
-            'relative rounded-xl border border-slate-700/80 bg-slate-900/80 focus-within:border-brand-500 focus-within:ring-2 focus-within:ring-brand-500/20 transition-all',
+            'relative rounded-xl border border-stone-300 bg-white shadow-xs focus-within:border-brand-600 focus-within:ring-2 focus-within:ring-brand-500/15 transition-all',
             error && 'border-rose-500 focus-within:border-rose-500'
           )}
         >
@@ -50,25 +50,25 @@ export const MoneyInput = forwardRef<HTMLInputElement, MoneyInputProps>(
             disabled={disabled}
             dir="ltr"
             className={cn(
-              'w-full bg-transparent px-3 py-2.5 text-left font-mono text-base font-bold text-slate-100 placeholder-slate-500 focus:outline-none disabled:opacity-50 num-tabular',
+              'w-full bg-transparent pr-3 pl-16 py-2.5 text-left font-sans text-base font-bold text-stone-800 placeholder-stone-400 focus:outline-none disabled:opacity-50',
               className
             )}
             placeholder="۰"
             {...props}
           />
-          <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-xs font-normal text-slate-400 select-none">
+          <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-stone-500 select-none bg-stone-100 rounded-md px-1.5 py-0.5">
             {unit}
           </span>
         </div>
         {showWords && value !== 0 && (
-          <p className="text-[11px] font-medium text-brand-400 pr-1 select-none animate-in fade-in">
+          <p className="text-[11px] font-medium text-brand-700 bg-brand-50/80 border border-brand-200/60 rounded-md px-2 py-0.5 inline-block select-none animate-in fade-in">
             {num2persian(value)}
           </p>
         )}
         {error ? (
-          <p className="text-xs text-rose-400 pr-1">{error}</p>
+          <p className="text-xs text-rose-500 pr-1">{error}</p>
         ) : (
-          helperText && <p className="text-xs text-slate-400 pr-1">{helperText}</p>
+          helperText && <p className="text-xs text-stone-500 pr-1">{helperText}</p>
         )}
       </div>
     );
