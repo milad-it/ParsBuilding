@@ -74,3 +74,32 @@ Current State & Resume Instructions:
 5. Strict adherence to AGENTS.md / GEMINI.md git commit and push protocol on origin/main after every file modification.
 6. Your working directory is `.agents/teamwork/orchestrator/`.
 7. Your parent is Project Sentinel (`5e06427b-6332-4e68-9516-df1d31437294`). Report progress and gate transitions regularly.
+
+
+## 2026-11-01T13:40:38Z
+From: ce8670ac-9bc6-4952-b978-4777511b0aa6
+Content:
+**Context**: M3 Explorer 3 (Client Architecture, Stores, API Layer & Migration Bridge) investigation complete.
+**Content**: Full research and design deliverables have been compiled into `.agents/teamwork/m3_explorer_3/handoff.md`. Key findings:
+1. Cataloged existing legacy client structure (`index.html`, `js/app.js`, `js/idb.js`, `js/state.js`, `js/logic.js`, IndexedDB `ParsBuildingDB`, LocalStorage `app_db_pars_v6`).
+2. Formulated Unified API client architecture (`client/src/services/api.ts`) with Axios, `/api/v1` base, Bearer token & tenant header injection, and concurrent-safe 401 response interceptor with silent token refresh queue.
+3. Designed Client-Side Legacy Data Migration Bridge (`client/src/services/migrationBridge.ts`) providing automatic discovery of IndexedDB/LocalStorage, Persian numeral & decimal parsing, field alias normalization, and reconciliation assertion validation ($\Delta Fund = 0, \Delta Debts = 0$).
+4. Architected WebSocket client (`client/src/services/websocket.ts`) connecting to `/api/v1/ws?token=...`, handling heartbeats, exponential backoff reconnection, and real-time state routing directly to reactive Zustand stores.
+Changes committed and pushed to `origin/main` at commit `4e8cdb5`.
+**Action**: Review `d:\cursor projects\web sakhtemon - Copy - antig - Copy, last my ui\.agents\teamwork\m3_explorer_3\handoff.md` and proceed with Milestone 3 execution planning.
+
+
+## 2026-11-01T13:41:49Z
+From: b84bb179-9842-4f7b-a1a1-83cdceebca99
+Content:
+**Context**: Milestone 3 REST & Real-Time WebSocket API Architecture Investigation
+**Content**: I have completed a comprehensive architectural investigation of the Fastify backend and WebSocket services. The report specifies the complete set of REST endpoints across all core entities (Complexes, Buildings, Units, Residents, Periods, Charges, Payments, Transactions, Announcements, Audit Logs), complete with Zod schemas, RBAC guards, fail-closed tenant isolation, RFC 7807 problem details, immutable audit logging, calculationEngine integration, and real-time WebSocket room/event mappings. The handoff report is available at `d:\cursor projects\web sakhtemon - Copy - antig - Copy, last my ui\.agents\teamwork\m3_explorer_2\handoff.md`.
+**Action**: Review the handoff report and proceed with Milestone 3 implementation planning.
+
+
+## 2026-11-01T13:43:54Z
+From: 854ef947-5ee5-4cac-89df-9e5f04ac039c
+Content:
+**Context**: Milestone 3 Data Migration Pipeline & Financial Reconciliation Investigation
+**Content**: I have completed a comprehensive read-only investigation of legacy client storage structures (IndexedDB `ParsBuildingDB`, localStorage `app_db_pars_v6`, fallback keys, and backup JSON format), the target PostgreSQL/Prisma multi-tenant schema, atomic ACID ingestion mechanics via `rawPrisma.$transaction`, and exact mathematical reconciliation formulas ($\Delta Fund = 0, \Delta Debts = 0$). I have drafted complete architecture blueprints, code implementations, API route specifications, and verification methods. The detailed 5-component handoff report is available at `d:\cursor projects\web sakhtemon - Copy - antig - Copy, last my ui\.agents\teamwork\m3_explorer_1\handoff.md`.
+**Action**: Review the findings and handoff report in `handoff.md` to proceed with implementing `server/src/services/migrationService.ts` and `server/src/routes/migrationRoutes.ts` in Milestone 3.
