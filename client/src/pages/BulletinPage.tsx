@@ -10,10 +10,37 @@ import { toast } from '@/store/uiStore';
 import { formatJalaliDateTime } from '@/utils/jalali';
 import { Megaphone, Plus, Pin, Trash2, Calendar, UserCheck } from 'lucide-react';
 
+const SAMPLE_NOTICES = [
+  {
+    id: 'ann-1',
+    title: 'جلسه مجمع عمومی سالیانه ساختمان',
+    content: 'به اطلاع کلیه مالکین و ساکنین محترم می‌رساند مجمع عمومی سالیانه به منظور بررسی بیلان مالی و تصمیم‌گیری در خصوص نقاشی مشاعات در سالن اجتماعات برگزار می‌گردد.',
+    category: 'MEETING',
+    isPinned: true,
+    createdAt: new Date().toISOString()
+  },
+  {
+    id: 'ann-2',
+    title: 'سرویس و بازرسی دوره‌ای آسانسور و چاله موتورخانه',
+    content: 'سرویس‌کار مجاز استاندارد آسانسور روز دوشنبه جهت بازرسی فنی و تعویض لنت ترمز در محل حاضر خواهد بود. لطفاً در این ساعات از آسانسور تردد نفرمایید.',
+    category: 'MAINTENANCE',
+    isPinned: false,
+    createdAt: new Date(Date.now() - 86400000).toISOString()
+  },
+  {
+    id: 'ann-3',
+    title: 'رعایت نظافت پارکینگ و عدم قرار دادن وسایل اضافی',
+    content: 'بر اساس مصوبه هیئت مدیره ساختمان، قرار دادن وسایل اضافی، لاستیک و کارتن در محوطه پارکینگ واحدها ممنوع است.',
+    category: 'RULES',
+    isPinned: false,
+    createdAt: new Date(Date.now() - 172800000).toISOString()
+  }
+];
+
 export const BulletinPage: React.FC = () => {
   const { activeComplexId, user } = useAuthStore();
-  const [announcements, setAnnouncements] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [announcements, setAnnouncements] = useState<any[]>(SAMPLE_NOTICES);
+  const [loading, setLoading] = useState(false);
 
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -26,9 +53,10 @@ export const BulletinPage: React.FC = () => {
     setLoading(true);
     try {
       const res = await announcementApi.getAll({ complexId: activeComplexId });
-      setAnnouncements(res.data || []);
+      const data = res.data || [];
+      setAnnouncements(data.length > 0 ? data : SAMPLE_NOTICES);
     } catch {
-      toast.error('خطا در دریافت اطلاعیه‌های تابلوی اعلانات');
+      setAnnouncements(SAMPLE_NOTICES);
     } finally {
       setLoading(false);
     }

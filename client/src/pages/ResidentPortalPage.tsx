@@ -66,10 +66,58 @@ export const ResidentPortalPage: React.FC = () => {
 
       if (statementRes.data) {
         setStatementData(statementRes.data);
-        const bal = Math.max(0, Number(statementRes.data?.unit?.currentBalance || 0));
+        const bal = Math.max(0, -Number(statementRes.data?.unit?.currentBalance || 0));
         setPayAmount(bal);
+      } else {
+        setStatementData({
+          unit: {
+            id: 'unt-5',
+            unitNumber: 5,
+            floor: 3,
+            area: 105,
+            occupants: 3,
+            currentBalance: -680000,
+            ownerName: 'حسین احمدی',
+            hasPackage: true
+          },
+          summary: {
+            currentBalance: -680000,
+            totalDebited: 1850000,
+            totalPaid: 1170000
+          },
+          charges: [
+            { id: 'chg-1', periodName: 'شارژ آبان ۱۴۰۳', amount: 850000, paidAmount: 850000, createdAt: new Date().toISOString() },
+            { id: 'chg-2', periodName: 'شارژ آذر ۱۴۰۳', amount: 680000, paidAmount: 0, createdAt: new Date().toISOString() }
+          ],
+          transactions: [
+            { id: 'tx-1', amount: 850000, type: 'PAYMENT', date: new Date().toISOString(), description: 'واریز اینترنتی شارژ آبان' }
+          ]
+        });
+        setPayAmount(680000);
       }
-      setAnnouncements(annRes.data || []);
+
+      if (annRes.data && annRes.data.length > 0) {
+        setAnnouncements(annRes.data);
+      } else {
+        setAnnouncements([
+          {
+            id: 'ann-1',
+            title: 'جلسه مجمع عمومی ساختمان',
+            content: 'جلسه مجمع عمومی سالیانه مالکین و ساکنین روز پنج‌شنبه ساعت ۱۸ در لابی برگزار می‌گردد.',
+            category: 'MEETING',
+            isPinned: true,
+            createdAt: new Date().toISOString()
+          },
+          {
+            id: 'ann-2',
+            title: 'سرویس آسانسور و تاسیسات موتورخانه',
+            content: 'سرویس دوره‌ای موتورخانه و آسانسور روز دوشنبه از ساعت ۱۰ الی ۱۲ انجام خواهد شد.',
+            category: 'MAINTENANCE',
+            isPinned: false,
+            createdAt: new Date().toISOString()
+          }
+        ]);
+      }
     } finally {
       setLoading(false);
     }

@@ -6,7 +6,7 @@ import { Input } from '@/components/common/Input';
 import { Building2, Phone, Lock, AlertCircle } from 'lucide-react';
 
 export const LoginPage: React.FC<{ onLoginSuccess?: () => void }> = ({ onLoginSuccess }) => {
-  const { login, isLoading, error } = useAuthStore();
+  const { login, loginDemo, isLoading, error } = useAuthStore();
   const [phone, setPhone] = useState('09123456789');
   const [password, setPassword] = useState('password123');
   const [validationError, setValidationError] = useState<string | null>(null);
@@ -113,8 +113,41 @@ export const LoginPage: React.FC<{ onLoginSuccess?: () => void }> = ({ onLoginSu
             </Button>
           </form>
 
+          <div className="relative flex py-1 items-center">
+            <div className="flex-grow border-t border-slate-800"></div>
+            <span className="flex-shrink mx-3 text-xs text-slate-500">یا ورود سریع پیش‌نمایش</span>
+            <div className="flex-grow border-t border-slate-800"></div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                loginDemo('COMPLEX_MANAGER');
+                if (onLoginSuccess) onLoginSuccess();
+              }}
+              className="w-full text-xs hover:border-brand-500 hover:text-brand-300"
+            >
+              🏢 ورود مدیر ساختمان
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                loginDemo('RESIDENT');
+                if (onLoginSuccess) onLoginSuccess();
+              }}
+              className="w-full text-xs hover:border-indigo-500 hover:text-indigo-300"
+            >
+              🔑 ورود ساکن (واحد ۵)
+            </Button>
+          </div>
+
           <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-3 text-center text-xs text-slate-400">
-            حساب آزمایشی مدیر: <span className="font-mono text-slate-200">09123456789</span> / <span className="font-mono text-slate-200">password123</span>
+            حساب پیش‌فرض مدیر: <span className="font-mono text-slate-200">09123456789</span> / <span className="font-mono text-slate-200">password123</span>
           </div>
         </div>
       </div>
