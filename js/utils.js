@@ -107,7 +107,7 @@ function showToast(msg, type = 'info') {
 }
 
 // --- Math & Format Utils ---
-const toEnDigit = s => (s == null ? '' : String(s).replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٤٩'.indexOf(d)));
+const toEnDigit = s => (s == null ? '' : String(s).replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)));
 const toFaDigit = s => (s == null ? '' : String(s).replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]));
 
 function fmt(n) {
